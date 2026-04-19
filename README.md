@@ -1,39 +1,152 @@
 # Obsidian Agent Memory
 
-A production-grade memory system for AI coding agents (Claude, Gemini, Cursor, Copilot). 
+[![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
+[![Works with: Claude](https://img.shields.io/badge/Works_with-Claude-orange)](CLAUDE.md)
+[![Works with: Gemini](https://img.shields.io/badge/Works_with-Gemini-blue)](GEMINI.md)
+[![Works with: Cursor](https://img.shields.io/badge/Works_with-Cursor-purple)]()
+[![Works with: Copilot](https://img.shields.io/badge/Works_with-Copilot-cyan)]()
+[![Works with: Windsurf](https://img.shields.io/badge/Works_with-Windsurf-teal)]()
 
-Stop dealing with agents that forget previous architectural decisions, hallucinate repo states, or spend hundreds of thousands of tokens reading your entire codebase just to fix a typo.
+**A production-grade memory system for AI coding agents.**
 
-This is NOT an automated ingest tool. This is a disciplined, human-in-the-loop operational vault. It focuses on the **Context Capsule Pattern** — dense, fact-based boundaries that tell an agent exactly how to act within a specific codebase domain.
+Stop dealing with agents that forget previous architectural decisions, hallucinate repo states, or burn tokens reading your entire codebase just to fix a typo.
 
-## Why this exists
+> Clone → Open in Obsidian → Point your AI agent → Start coding with memory.
 
-Karpathy's LLM Wiki pattern and derivative projects (`obsidian-wiki`, `second-brain`, `llm-wiki-compiler`) are fantastic for general knowledge management. But they fail for active software development because:
-1. They lack a cost-conscious retrieval protocol.
-2. They over-update, creating "vault bloat".
-3. They don't enforce a "repo truth overrides vault summaries" rule.
+---
 
-**Obsidian Agent Memory** fixes this. 
+## The Problem
 
-## Features
+Karpathy's [LLM Wiki pattern](https://x.com/karpathy/status/1880365337488875564) and projects like [`obsidian-wiki`](https://github.com/Ar9av/obsidian-wiki), [`second-brain`](https://github.com/NicholasSpisak/second-brain), and [`llm-wiki-compiler`](https://github.com/ussumant/llm-wiki-compiler) are excellent for general knowledge management. But they're designed for knowledge ingestion — not for the tight feedback loop of active software development, where:
 
-- **Tiered Retrieval Protocol**: Agents are instructed to read capsules first, and stop escalating if they have their answer. Major API token savings.
-- **Context Capsules**: 60-line max notes that compress operational knowledge (e.g. `capsule-database.md`, `capsule-build-test.md`).
-- **Contradiction Resolution Engine**: A strict rule that the repo state always overrides the vault state, forcing agents to correct the vault rather than hallucinate.
-- **Session Closeout Checklists**: Explicit "leave it alone" rules so agents only update the vault when facts change, preventing note drift.
-- **Vendor-Agnostic**: Works out of the box with `claude`, `gemini-cli`, `cursor` agents, or any other tool that can read arbitrary markdown paths.
+1. **Token budgets matter** — agents read everything, even when they only need one fact.
+2. **Vaults bloat** — agents over-update notes, introducing drift and noise.
+3. **Repo truth gets ignored** — a vault note says 416 tests, but the repo now has 500. The agent trusts the vault and hallucinates.
+
+## The Solution
+
+**Obsidian Agent Memory** introduces three patterns that fix this:
+
+### 🧊 Context Capsules
+Dense, 60-line-max notes that compress operational knowledge into retrievable boundaries. Instead of reading a 300-line architecture doc, your agent reads `capsule-database.md` and knows exactly what ORM you use, where the schema lives, and what breaks if you touch it.
+
+### 📶 Tiered Retrieval Protocol
+A cost-conscious reading order: capsules first, full docs only if needed. Most coding tasks resolve at Tier 2 — agents stop escalating as soon as they have the answer.
+
+```
+Tier 0: VAULT_RULES.md (always)
+Tier 1: _project.md + current-focus.md
+Tier 2: Context capsule for the task domain  ← stop here for most tasks
+Tier 3: Full 00_meta/ notes (repo-map, architecture-index)
+Tier 4: Project wiki/ pages
+Tier 5: raw/ sources (last resort)
+```
+
+### ⚖️ Contradiction Resolution
+**Repo truth always overrides vault summaries.** If an agent observes a conflict, it must flag it, trust the repo, and update the vault note. No silent hallucination.
+
+---
+
+## What's Inside
+
+```
+obsidian-agent-memory/
+├── AGENTS.md                          ← agent entrypoint (generic)
+├── CLAUDE.md                          ← Claude Code entrypoint
+├── GEMINI.md                          ← Gemini CLI entrypoint
+├── Home.md                            ← vault home page
+│
+├── 00_System/
+│   ├── AI/
+│   │   ├── VAULT_RULES.md             ← master rules (read first)
+│   │   ├── RETRIEVAL_PROTOCOL.md      ← tiered retrieval order
+│   │   ├── SESSION_CLOSEOUT_PROTOCOL.md ← when to update / leave alone
+│   │   ├── STALENESS_POLICY.md        ← freshness thresholds
+│   │   ├── INTAKE_PROTOCOL.md         ← how to capture new info
+│   │   └── PROMOTION_RULES.md         ← when project→global promotion
+│   ├── Templates/                     ← note templates (6 types)
+│   └── Logs/Vault-Changes.md         ← structural change log
+│
+├── 20_Projects/
+│   ├── _Template/                     ← copy this for new projects
+│   │   └── 00_meta/context-capsules/README.md  ← capsule creation rules
+│   └── example-app/                   ← working example project
+│       └── 00_meta/
+│           ├── _project.md
+│           ├── current-focus.md
+│           └── context-capsules/
+│               ├── capsule-database.md
+│               └── capsule-build-test.md
+│
+├── 01_Inbox/                          ← captures, fleeting notes
+├── 10_Global/wiki/                    ← cross-project knowledge
+├── 30_Areas/                          ← ongoing responsibilities
+└── 99_Archive/                        ← completed material
+```
+
+**Two files to start:** Only `VAULT_RULES.md` and `RETRIEVAL_PROTOCOL.md` are required reading. Everything else is reference.
+
+---
 
 ## Quick Start
-1. Clone this repository to a local folder: `git clone https://github.com/YOUR_GITHUB_HANDLE/obsidian-agent-memory.git`
-2. Open the folder as a Vault in Obsidian.
-3. Open `Home.md`. 
-4. Check out `20_Projects/example-app` to see how a Context Capsule is written.
-5. In your AI Agent, point it to the vault: "My memory system is located at `[path-to-vault]`. Start by reading `00_System/AI/VAULT_RULES.md` and `00_System/AI/RETRIEVAL_PROTOCOL.md`."
+
+```bash
+git clone https://github.com/mithunyc/obsidian-agent-memory.git
+```
+
+1. Open the cloned folder as a **Vault** in [Obsidian](https://obsidian.md).
+2. Open `Home.md` — this is your dashboard.
+3. Explore `20_Projects/example-app/` to see context capsules in action.
+4. Copy `20_Projects/_Template/` and rename it for your own project.
+5. Tell your AI agent:
+
+> "My memory system is at `[path-to-vault]`. Start by reading `00_System/AI/VAULT_RULES.md` and `00_System/AI/RETRIEVAL_PROTOCOL.md`."
+
+Or just point it at `AGENTS.md` / `CLAUDE.md` / `GEMINI.md` in the vault root — it handles the rest.
+
+---
 
 ## The Workflow
-1. When you start an AI coding session, point the agent to the project's meta notes via the tiered retrieval protocol.
-2. The agent executes the task using the known boundaries.
-3. When the session ends, the agent runs the `SESSION_CLOSEOUT_PROTOCOL.md` to spot-check for stale notes, update any mutated facts in the context capsules, and record completed tasks.
+
+```
+Start session → Agent reads capsules (Tier 0–2) → Execute task → Session closeout → Done
+```
+
+1. **Start:** Agent reads `_project.md`, `current-focus.md`, and the relevant capsule.
+2. **Code:** Agent works with full operational context.
+3. **Close:** Agent runs `SESSION_CLOSEOUT_PROTOCOL.md` — updates only what changed, leaves everything else alone.
+
+---
+
+## Works With
+
+| Agent | Config File | Status |
+|-------|------------|--------|
+| Claude Code | `CLAUDE.md` | ✅ Tested |
+| Gemini CLI / Antigravity | `GEMINI.md` | ✅ Tested |
+| Cursor | `AGENTS.md` | ✅ Compatible |
+| GitHub Copilot | `AGENTS.md` | ✅ Compatible |
+| Windsurf | `AGENTS.md` | ✅ Compatible |
+| Any agent that reads markdown | `AGENTS.md` | ✅ Compatible |
+
+---
+
+## Inspired By
+
+- Andrej Karpathy's [LLM Wiki pattern](https://x.com/karpathy/status/1880365337488875564)
+- [`obsidian-wiki`](https://github.com/Ar9av/obsidian-wiki) — tiered retrieval influence
+- [`second-brain`](https://github.com/NicholasSpisak/second-brain) — three-layer architecture
+- [`llm-wiki-compiler`](https://github.com/ussumant/llm-wiki-compiler) — coverage indicators concept
+- [`wiki-skills`](https://github.com/kfchou/wiki-skills) — wiki-lint health checks
+
+What this project adds: **Context Capsules**, **Contradiction Resolution**, **Session Closeout with leave-alone rules**, and a **Tiered Retrieval Budget** specifically designed for the tight loop of active software development.
+
+---
+
+## Contributing
+
+Contributions welcome. If you've built capsule patterns for new domains (auth, deployment, CI/CD, monitoring), open a PR to add them as examples.
 
 ## License
-MIT License. Free to use, bend, and break. Designed to prevent reinventing the wheel for agentic workflows.
+
+[MIT](LICENSE) — free to use, fork, and extend.
