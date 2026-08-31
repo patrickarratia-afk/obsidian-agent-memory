@@ -11,12 +11,15 @@ tags: [focus, active]
 
 ## Active Task
 
-Setting up operational memory layer (Obsidian vault). Next: continue frontend redesign.
+Next frontend redesign phase — Production surfaces.
 
 ## Recently Completed
 
+- [x] Frontend redesign Phase 1 — design system foundations (`af5de16`)
+- [x] Frontend redesign Phase 2 — app shell + inventory workspace (`d90d287`)
+- [x] Frontend redesign Phase 3 — Product Detail + Kardex (`f713a46`)
+- [x] Frontend redesign Phase 4 — Commercial (`98754d1`)
 - [x] Project Wiki installed and committed in canonical repo
-- [x] Frontend redesign Phase 3 completed
 - [x] Obsidian Agent Memory scaffold created for StockCheck
 
 ## Verified Baseline
