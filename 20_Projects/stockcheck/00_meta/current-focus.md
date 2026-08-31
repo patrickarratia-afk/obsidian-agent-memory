@@ -17,6 +17,7 @@ Architecture decision: StockCheck is ready with conditions for a controlled acco
 
 ## Recently Completed
 
+- [x] Inventory navigation performance hardening (`9dc60bb`) — cached `Intl.NumberFormat` formatters, memoized/stabilized `HomeInventoryView` props and callbacks, removed unused unstable props, and memoized committed/expected maps; 53/53 frontend pure tests passed, typecheck passed, static Expo export passed, and manual production-build QA at `http://localhost:8082` confirmed fast navigation again
 - [x] Backend pilot-critical QA (`e374a63`) — `backend/npm run test:pilot-critical` passed completely against confirmed DEV database `stockcheck_dev`; working tree stayed clean and HEAD remained `e374a63`
 - [x] Frontend pure QA tests (`e374a63`) — 53 Node `node:test` frontend pure tests passed; typecheck passed; no new test dependency
 - [x] Frontend redesign Phase 1 — design system foundations (`af5de16`)
@@ -38,5 +39,9 @@ Architecture decision: StockCheck is ready with conditions for a controlled acco
 ## Next Session
 
 Perform manual browser QA across onboarding/readiness X/4, manual product creation, CSV/XLS/XLSX import, duplicate behavior, purchase, sale, insufficient-stock UX, Kardex/traceability, incoming documents, company switching/isolation, Modo simple / Avanzado navigation, laptop layout, and mobile layout.
+
+Inventory page also needs a separate focused visual redesign using `design-md`: make the page denser and more table-first, reduce blank vertical space, move search closer to title/table, reduce filter/order height, and bring the table higher. This is separate from the performance fix.
+
+For StockCheck frontend local browser testing, use `http://localhost:8082`; do not use `127.0.0.1` because backend CORS treats it as a different origin.
 
 BSV2 and real business data remain prohibited. Do not connect to, inspect, query, mutate, or use BSV2 for QA evidence.
