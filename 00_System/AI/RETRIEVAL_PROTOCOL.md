@@ -12,7 +12,7 @@ Defines what to read, in what order, and when to stop — for any AI tool operat
 
 ## Core Rule: Single-Project Isolation
 
-**Never load notes from both `unionforge-ai` and `arkaan` in the same retrieval pass** unless the user explicitly requests a cross-project comparison, migration plan, or shared-pattern analysis. Load only the project relevant to the current task.
+**Load only the project relevant to the current task.** Never load notes from multiple projects in the same retrieval pass unless the user explicitly requests a cross-project comparison, migration plan, or shared-pattern analysis.
 
 ## Tier Budget
 
@@ -25,44 +25,55 @@ Start at **Tiers 0–2 only**. Escalate to Tier 3+ only if the needed fact is st
 | 0 | `00_System/AI/VAULT_RULES.md` | Always read — non-negotiable |
 | 1 | `_project.md` + `current-focus.md` for the active project | Stop here if the task context is already clear |
 | 2 | Context capsule(s) matching the task domain | **Stop here for most tasks** |
-| 3 | Full `00_meta/` notes: `repo-map`, `architecture-index`, `authority-map`, `dependency-map` | Only if Tier 2 left the question unresolved |
-| 4 | Project `wiki/` pages | Only for architecture, cross-cutting patterns, or design history |
+| 3 | StockCheck `.project-wiki/INDEX.md` and only the specific linked canonical wiki page needed | Only if Tier 2 left the question unresolved |
+| 4 | Graphify / Serena / targeted repo inspection for current code reality | Only for architecture, cross-cutting patterns, or design history |
 | 5 | `raw/` source files | Last resort — only when vault content conflicts with observed repo state |
 
 ## Task-Type Load Tables
 
 ### Normal Coding Task
 
-1. Tier 0 — VAULT_RULES
-2. Tier 1 — `_project.md`, `current-focus.md`
-3. Tier 2 — `capsule-build-test.md` (if running tests or builds)
-4. Tier 2 — `capsule-database.md` (if touching schema or queries)
-5. Stop. Execute task.
+1. Tier 0 — `00_System/AI/VAULT_RULES.md`
+2. Tier 1 — `20_Projects/stockcheck/_project.md`, `20_Projects/stockcheck/00_meta/current-focus.md`
+3. Tier 2 — only the relevant StockCheck context capsule
+4. Stop. Execute task.
 
 ### Debugging
 
-1. Tier 0 — VAULT_RULES
-2. Tier 1 — `current-focus.md` (confirms recent changes and verified state)
+1. Tier 0 — `00_System/AI/VAULT_RULES.md`
+2. Tier 1 — `20_Projects/stockcheck/00_meta/current-focus.md`
 3. Tier 2 — capsule matching the failing domain
-4. Tier 3 — `architecture-index.md` § Failure Surfaces (if root cause is unclear)
-5. Tier 3 — `repo-map.md` § Key Scripts (if the failing command is ambiguous)
+4. Tier 3 — StockCheck `.project-wiki/INDEX.md` and the specific linked canonical page needed
+5. Tier 4 — Graphify / Serena / targeted repo inspection for current code reality
 6. Stop. Do not speculatively read further.
 
 ### Architecture / Refactor Work
 
-1. Tier 0 — VAULT_RULES
-2. Tier 1 — `_project.md`, `current-focus.md`
-3. Tier 2 — all capsules for the project (scan all, read relevant ones)
-4. Tier 3 — `architecture-index.md`, `authority-map.md`, `dependency-map.md`
-5. Tier 4 — project `wiki/` pages if design history is needed
-6. Consult `authority-map.md` before any change that touches generated files, auth, or external APIs.
+1. Tier 0 — `00_System/AI/VAULT_RULES.md`
+2. Tier 1 — `20_Projects/stockcheck/_project.md`, `20_Projects/stockcheck/00_meta/current-focus.md`
+3. Tier 2 — all StockCheck context capsules (scan all, read relevant ones)
+4. Tier 3 — StockCheck `.project-wiki/INDEX.md` and only the specific linked canonical wiki page needed
+5. Tier 4 — Graphify / Serena / targeted repo inspection for current code reality
+6. Do not load the full Project Wiki in a single pass.
 
-## When to Consult `authority-map.md`
+## Authority Hierarchy
 
-Read `authority-map.md` before:
-- Any change to files listed there as generated or owned by external tools
-- Any modification to auth, RLS, or secrets handling
-- Any change that could introduce circular package dependencies
+Authority order for StockCheck:
+1. **Current repo code, Git history, migrations, passing tests** — always source of truth
+2. **StockCheck `.project-wiki/`** — durable decisions, requirements, architecture, project state
+3. **Obsidian Agent Memory** — compact operational context and session continuity
+
+If Obsidian conflicts with Project Wiki, prefer Project Wiki unless repo code disproves it.
+If either memory layer conflicts with repo/tests, trust repo/tests.
+
+## Tool Roles
+
+| Tool | Role |
+|------|------|
+| Graphify | Current architecture/dependency maps |
+| Serena | Current symbols/references |
+| Project Wiki | Durable project knowledge |
+| Obsidian Agent Memory | Compact operational continuation context |
 
 ## When Capsules Are Preferred Over Meta Notes
 

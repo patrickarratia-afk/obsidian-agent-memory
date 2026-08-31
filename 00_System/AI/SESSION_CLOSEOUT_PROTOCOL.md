@@ -10,29 +10,29 @@ tags: [system, protocol]
 
 What to do — and what NOT to do — when a coding session ends. Designed for AI tools and humans alike.
 
-**Default: leave the vault unchanged.** Update only when a clear trigger below is met.
+**Default: leave Obsidian vault unchanged.** Update only when a clear trigger below is met.
 
 ---
 
 ## Update Triggers
 
-### Always update after a coding task
+### Update Obsidian only when operational continuation context materially changes
 
 | What changed in repo | What to update in vault |
 |---------------------|------------------------|
-| New command, script, or test discovered | `capsule-build-test.md` key boundaries table |
-| Schema change (table added, column changed, migration) | `capsule-database.md` |
-| Dependency added or removed | `dependency-map.md` |
-| Auth or generated-file rule changed | `authority-map.md` |
-| A task in `current-focus.md` is now complete | `current-focus.md` — mark complete, update next focus |
+| Current focus / next concrete task changed | `current-focus.md` — update, do not mark partial progress |
+| Feature or milestone completed | `current-focus.md` — mark complete, set next focus |
+| Important blocker appeared or disappeared | `current-focus.md` — note the blocker |
+| A durable boundary changed and a capsule would otherwise become incorrect | Relevant context capsule — update facts only |
+| Staleness threshold exceeded per STALENESS_POLICY | Relevant capsule — re-verify and update `source_date` |
 
-### Update `current-focus.md` when
+### Do NOT update Obsidian merely because
 
-- The primary task from the previous session is fully done.
-- A new sprint or story has started.
-- The project's verified baseline has changed (e.g., new test count, new build exit status).
-
-Do **not** update `current-focus.md` for partial progress. Wait until a unit of work is verifiably closed.
+- Styling changed
+- A small bug was fixed
+- Formatting or whitespace changes
+- Mechanical refactoring happened
+- Project Wiki was updated but operational context did not change
 
 ### Add a decision note (`decisions/`) when
 
