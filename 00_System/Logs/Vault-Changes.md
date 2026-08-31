@@ -14,3 +14,4 @@ Log significant structural changes to the vault here. Minor edits to notes do no
 |------|--------|-------|
 | 2026-04-19 | Initial vault scaffold created from obsidian-agent-memory template | — |
 | 2026-08-30 | Adapted vault for StockCheck project — updated RETRIEVAL_PROTOCOL, SESSION_CLOSEOUT_PROTOCOL, created stockcheck project folder with _project.md, current-focus.md, project-wiki-bridge.md, context-capsules/README.md | Codex |
+| 2026-08-31 | Created StockCheck Pilot Path QA + Hardening context capsule | Hermes Agent |

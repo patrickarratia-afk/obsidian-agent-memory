@@ -11,10 +11,13 @@ tags: [focus, active]
 
 ## Active Task
 
-No active implementation plan is captured in the Project Wiki yet; next task is not verified.
+Pilot Path QA + Hardening.
+
+Architecture decision: StockCheck is ready with conditions for a controlled accompanied pilot. Current work is QA/hardening, not a new product feature.
 
 ## Recently Completed
 
+- [x] Frontend pure QA tests (`e374a63`) — 53 Node `node:test` frontend pure tests passed; typecheck passed; no new test dependency
 - [x] Frontend redesign Phase 1 — design system foundations (`af5de16`)
 - [x] Frontend redesign Phase 2 — app shell + inventory workspace (`d90d287`)
 - [x] Frontend redesign Phase 3 — Product Detail + Kardex (`f713a46`)
@@ -33,4 +36,6 @@ No active implementation plan is captured in the Project Wiki yet; next task is 
 
 ## Next Session
 
-Determine the next implementation task from a verified roadmap/current plan before starting work. Project Wiki current plan currently captures no active implementation plan.
+Run existing backend pilot-critical test suite against DEV only (`stockcheck_dev`), then perform manual browser QA across onboarding/readiness X/4, product create/import, purchase, sale, Kardex/traceability, incoming documents, company switching/isolation, Modo simple / Avanzado navigation, and laptop/mobile sanity.
+
+BSV2 and real business data remain prohibited. Do not connect to, inspect, query, mutate, or use BSV2 for QA evidence.
