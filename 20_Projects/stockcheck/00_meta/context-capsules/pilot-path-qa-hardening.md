@@ -23,6 +23,10 @@ Pilot Path QA + Hardening is the current engineering milestone after Pilot Onboa
 StockCheck is ready with conditions for a controlled accompanied pilot. Current engineering work is QA/hardening, not a new product feature.
 
 ## Completed Sub-steps
+- Inventory visual redesign landed at `2f37b16` (`Redesign inventory workspace`).
+- Inventory is now denser and table-first: `Inventario` is the primary header anchor; search is closer to title/content; actions and summary are compact; filters and sort share a compact toolbar; the table starts materially higher and consumes more viewport.
+- Preserved UI contracts: frozen Product column, horizontal scroll, one visible horizontal scrollbar at the bottom of the table viewport, visible vertical scrollbar, aligned headings/data, and mobile behavior.
+- Preserved performance boundaries: `React.memo(HomeInventoryView)`, stable `HomeScreen` props, memoized Maps, cached formatters, no virtualization, and no backend/business logic changes; visual QA passed.
 - Inventory navigation performance hardening landed at `9dc60bb` (`Improve inventory navigation performance`).
 - Manual QA had found a consistent ~2 second delay opening Compra, Venta, Bandeja, Más, and other screens.
 - Root cause: `HomeInventoryView` was always mounted; unrelated `HomeScreen` state changes caused full inventory rerenders; roughly 800 products rendered in duplicated frozen/scrollable table structure; `Intl.NumberFormat` objects were repeatedly created per row/cell; committed/expected maps were rebuilt repeatedly; unstable props prevented the memo boundary.
@@ -40,8 +44,6 @@ StockCheck is ready with conditions for a controlled accompanied pilot. Current 
 Manual browser QA is expected for onboarding/readiness X/4, manual product creation, CSV/XLS/XLSX import, duplicate behavior, purchase, sale, insufficient-stock UX, Kardex/traceability, incoming documents, company switching/isolation, Modo simple / Avanzado navigation, laptop layout, and mobile layout.
 
 For local frontend browser QA, use `http://localhost:8082`; do not use `127.0.0.1` because backend CORS treats it as a different origin.
-
-Inventory page needs a separate focused visual redesign using `design-md`: reduce blank vertical space, move search closer to title/table, reduce filters/order height, bring the table higher, and make inventory denser and more table-first.
 
 Do not mark Pilot Path QA + Hardening complete until manual browser QA is done.
 
