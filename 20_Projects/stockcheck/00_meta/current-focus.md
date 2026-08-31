@@ -11,7 +11,7 @@ tags: [focus, active]
 
 ## Active Task
 
-Next frontend redesign phase — not yet verified after Production completion.
+No active implementation plan is captured in the Project Wiki yet; next task is not verified.
 
 ## Recently Completed
 
@@ -20,6 +20,7 @@ Next frontend redesign phase — not yet verified after Production completion.
 - [x] Frontend redesign Phase 3 — Product Detail + Kardex (`f713a46`)
 - [x] Frontend redesign Phase 4 — Commercial (`98754d1`)
 - [x] Frontend redesign Phase 5 — Production (`fa89ac1`)
+- [x] Pilot Onboarding + Simple Mode Readiness (`324afd6`)
 - [x] Project Wiki installed and committed in canonical repo
 - [x] Obsidian Agent Memory scaffold created for StockCheck
 
@@ -32,4 +33,4 @@ Next frontend redesign phase — not yet verified after Production completion.
 
 ## Next Session
 
-Verify the next frontend redesign phase before implementation. No post-Production phase is captured in the current frontend-redesign capsule or Project Wiki current plan.
+Determine the next implementation task from a verified roadmap/current plan before starting work. Project Wiki current plan currently captures no active implementation plan.
