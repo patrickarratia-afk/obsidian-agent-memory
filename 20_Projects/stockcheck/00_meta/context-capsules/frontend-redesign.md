@@ -5,7 +5,7 @@ project: stockcheck
 domain: frontend-redesign
 status: active
 reviewed: false
-source_date: 2026-08-30
+source_date: 2026-08-31
 owner: patrick
 aliases: [frontend-redesign, frontend-phase]
 tags: [capsule, frontend, redesign]
@@ -27,12 +27,13 @@ Systematic polish of all StockCheck screens toward a calm, modern-operational, d
 | 2 | App shell + inventory workspace — `HomeScreen.styles.ts`, refined `HomeInventoryView` | `d90d287` | 2026-08-30 |
 | 3 | Product Detail + Kardex — full rewrite of `ProductDetailPage.tsx` | `f713a46` | 2026-08-30 |
 | 4 | Commercial — `CommercialMovementsPage`, `PurchaseForm`, `SaleForm`, `CommercialFormModals`, `CommercialActionModals`, `ActualSaleActionsSheet`, `SalesPlanningActionsSheet` | `98754d1` | 2026-08-30 |
+| 5 | Production — `ProductionForm`, `ProductionFormModal`, `ProductionHistoryPage`, `ProductionCompletionModal`, `ProductionUnbuildModal`, `RecipesPage` | `fa89ac1` | 2026-08-31 |
 
-## Phase 4 Summary
-- Adopted `tablePrimitiveStyles`, `StatusBadge`, `AppButton`, `actionSheetPrimitiveStyles`, `modalPrimitiveStyles` across all 7 commercial surfaces
-- Replaced ~60 hardcoded hex values with design tokens
-- All business logic, OCR, document upload, line management, stock-origin allocation, order-to-document conversion, void flows preserved
-- Final focused review passed; no backend/API/hooks modified
+## Phase 5 Summary
+- Refined production forms, modal shell, history page, completion modal, unbuild modal, and recipes page at the UI/operational layer
+- `ProductionActionsSheet` remained unchanged because it already used the design system
+- Business logic and API contracts were preserved
+- Final independent review passed
 
 ## Design System
 - **Palette**: calm teal primary (`#1F6F78`), neutral backgrounds (`#F5F7F8`), subtle borders (`#DDE5E8`)
@@ -42,11 +43,11 @@ Systematic polish of all StockCheck screens toward a calm, modern-operational, d
 - **Direction**: maintain AGENTS.md UX rules — compact tabs, stable layout, module-grouped actions, Chilean locale
 
 ## Next Phase
-**Production** — production forms, completion modal, unbuild modal, production history page, recipes.
+No verified post-Production frontend redesign phase is captured in this capsule or the Project Wiki current plan.
 
 ## Deferred / Out of Scope
 - Backend architecture decomposition
-- SII, documents, reports, admin screens
+- Unprioritized frontend areas beyond Production
 - Automated frontend tests
 - BSV2 — completely off-limits
 
