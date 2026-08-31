@@ -17,6 +17,7 @@ Architecture decision: StockCheck is ready with conditions for a controlled acco
 
 ## Recently Completed
 
+- [x] Backend pilot-critical QA (`e374a63`) — `backend/npm run test:pilot-critical` passed completely against confirmed DEV database `stockcheck_dev`; working tree stayed clean and HEAD remained `e374a63`
 - [x] Frontend pure QA tests (`e374a63`) — 53 Node `node:test` frontend pure tests passed; typecheck passed; no new test dependency
 - [x] Frontend redesign Phase 1 — design system foundations (`af5de16`)
 - [x] Frontend redesign Phase 2 — app shell + inventory workspace (`d90d287`)
@@ -36,6 +37,6 @@ Architecture decision: StockCheck is ready with conditions for a controlled acco
 
 ## Next Session
 
-Run existing backend pilot-critical test suite against DEV only (`stockcheck_dev`), then perform manual browser QA across onboarding/readiness X/4, product create/import, purchase, sale, Kardex/traceability, incoming documents, company switching/isolation, Modo simple / Avanzado navigation, and laptop/mobile sanity.
+Perform manual browser QA across onboarding/readiness X/4, manual product creation, CSV/XLS/XLSX import, duplicate behavior, purchase, sale, insufficient-stock UX, Kardex/traceability, incoming documents, company switching/isolation, Modo simple / Avanzado navigation, laptop layout, and mobile layout.
 
 BSV2 and real business data remain prohibited. Do not connect to, inspect, query, mutate, or use BSV2 for QA evidence.

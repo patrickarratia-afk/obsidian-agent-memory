@@ -22,18 +22,19 @@ Pilot Path QA + Hardening is the current engineering milestone after Pilot Onboa
 ## Architecture Decision
 StockCheck is ready with conditions for a controlled accompanied pilot. Current engineering work is QA/hardening, not a new product feature.
 
-## Completed Sub-step
+## Completed Sub-steps
 - Frontend pure QA coverage landed at `e374a63` (`Add pilot frontend pure QA tests`).
 - Coverage includes importer helpers and pilot readiness X/4 logic.
 - Verification captured: 53 frontend pure tests passed, typecheck passed, Node built-in `node:test` runner, no new test dependency.
+- Backend pilot-critical QA passed at `e374a63` against confirmed DEV database `stockcheck_dev` using `backend/npm run test:pilot-critical`.
+- Backend verification covered build, audit logs, manual stock batches, purchase flow, sale flow, insufficient stock rejection, void sale, production completion, void production, and stock write-off.
+- Verified business behavior: purchases increase stock with Kardex/origin records; sales reduce FIFO stock with traceability; insufficient stock blocks sale without mutation; void sale restores stock and origin traceability; planned production does not move stock; completed production consumes materials and creates finished stock; production cost calculation/override works; void production reverses stock; write-off consumes FIFO/manual origins and records Kardex.
+- Post-test state: git working tree clean, HEAD remained `e374a63`, and tests produced no code changes.
 
 ## Next Step
-Run the existing backend pilot-critical test suite against DEV only: `stockcheck_dev`.
+Manual browser QA is expected for onboarding/readiness X/4, manual product creation, CSV/XLS/XLSX import, duplicate behavior, purchase, sale, insufficient-stock UX, Kardex/traceability, incoming documents, company switching/isolation, Modo simple / Avanzado navigation, laptop layout, and mobile layout.
 
-`test:pilot-critical` is DEV-mutating and has not yet been executed in this milestone.
-
-## After Backend Tests
-Manual browser QA is expected for onboarding/readiness X/4, product create/import, purchase, sale, Kardex/traceability, incoming documents, company switching/isolation, Modo simple / Avanzado navigation, and laptop/mobile sanity.
+Do not mark Pilot Path QA + Hardening complete until manual browser QA is done.
 
 ## Safety Boundary
 BSV2 and real business data are completely off-limits. Do not connect to, inspect, query, mutate, or use BSV2 for QA evidence.
