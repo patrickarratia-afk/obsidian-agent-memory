@@ -23,6 +23,10 @@ Pilot Path QA + Hardening is the current engineering milestone after Pilot Onboa
 StockCheck is ready with conditions for a controlled accompanied pilot. Current engineering work is QA/hardening, not a new product feature.
 
 ## Completed Sub-steps
+- Cross-screen consistency pass 2 landed at `8170df3` (`Align sales workspace with inventory`).
+- Ventas workspace alignment: Ventas is now the clear primary title with company context secondary; `+ Proyección` and `+ Venta real` remain directly accessible; duplicate `Acciones rápidas` card removed; month filtering moved into compact toolbar/chips; summary KPI blocks compacted; content starts materially higher; sales section card treatment flattened.
+- Ventas table density/header treatment now aligns with Inventory/Bandeja; `+ Proyección` contrast corrected; mobile behavior preserved; visual QA passed.
+- Ventas preserved contracts: no business logic, API, or sales semantics changed.
 - Cross-screen consistency pass 1 landed at `64f592b` (`Align documents workspace with inventory`).
 - Inventory micro-polish: header top spacing was slightly increased; density/table layout unchanged.
 - Incoming Documents / Bandeja redesign: compact page header, primary `+ Documento`, grouped SII actions, compact search/summary, preserved status/target filters, and table visually/behaviorally aligned with Inventory.
@@ -46,9 +50,7 @@ StockCheck is ready with conditions for a controlled accompanied pilot. Current 
 - Post-test state: git working tree clean, HEAD remained `e374a63`, and tests produced no code changes.
 
 ## Next Step
-Cross-screen consistency next priority: Ventas focused redesign.
-
-After that: Commercial / Kardex / Production / Recipes small polish.
+Cross-screen consistency next priority: small consistency polish batch for Commercial / Compras-Ventas, Kardex, Production, and Recipes.
 
 For local frontend browser QA, use `http://localhost:8082`; do not use `127.0.0.1` because backend CORS treats it as a different origin.
 
