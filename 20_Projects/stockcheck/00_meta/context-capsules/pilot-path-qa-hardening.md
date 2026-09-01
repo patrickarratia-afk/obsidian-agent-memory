@@ -5,7 +5,7 @@ project: stockcheck
 domain: pilot-path-qa-hardening
 status: active
 reviewed: false
-source_date: 2026-08-31
+source_date: 2026-09-01
 owner: patrick
 aliases: [pilot-qa, pilot-hardening, pilot-path-qa]
 tags: [capsule, pilot, qa, hardening]
@@ -23,6 +23,11 @@ Pilot Path QA + Hardening is the current engineering milestone after Pilot Onboa
 StockCheck is ready with conditions for a controlled accompanied pilot. Current engineering work is QA/hardening, not a new product feature.
 
 ## Completed Sub-steps
+- Cross-screen consistency pass 1 landed at `64f592b` (`Align documents workspace with inventory`).
+- Inventory micro-polish: header top spacing was slightly increased; density/table layout unchanged.
+- Incoming Documents / Bandeja redesign: compact page header, primary `+ Documento`, grouped SII actions, compact search/summary, preserved status/target filters, and table visually/behaviorally aligned with Inventory.
+- Documents preserved UI contracts: one horizontal scrollbar, visible vertical scrollbar, frozen Proveedor / N° doc. / Fecha columns, preserved header/data alignment, and verified mobile behavior.
+- Visual QA passed; no business logic changes and no API/SII semantics changed.
 - Inventory visual redesign landed at `2f37b16` (`Redesign inventory workspace`).
 - Inventory is now denser and table-first: `Inventario` is the primary header anchor; search is closer to title/content; actions and summary are compact; filters and sort share a compact toolbar; the table starts materially higher and consumes more viewport.
 - Preserved UI contracts: frozen Product column, horizontal scroll, one visible horizontal scrollbar at the bottom of the table viewport, visible vertical scrollbar, aligned headings/data, and mobile behavior.
@@ -41,7 +46,9 @@ StockCheck is ready with conditions for a controlled accompanied pilot. Current 
 - Post-test state: git working tree clean, HEAD remained `e374a63`, and tests produced no code changes.
 
 ## Next Step
-Manual browser QA is expected for onboarding/readiness X/4, manual product creation, CSV/XLS/XLSX import, duplicate behavior, purchase, sale, insufficient-stock UX, Kardex/traceability, incoming documents, company switching/isolation, Modo simple / Avanzado navigation, laptop layout, and mobile layout.
+Cross-screen consistency next priority: Ventas focused redesign.
+
+After that: Commercial / Kardex / Production / Recipes small polish.
 
 For local frontend browser QA, use `http://localhost:8082`; do not use `127.0.0.1` because backend CORS treats it as a different origin.
 
