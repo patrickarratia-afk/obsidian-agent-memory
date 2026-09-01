@@ -17,48 +17,37 @@ tags: [capsule, pilot, qa, hardening]
 `/home/patrick/Apps/Bodega V2/Bodega`
 
 ## Active Milestone
-Pilot Path QA + Hardening is the current engineering milestone after Pilot Onboarding + Simple Mode Readiness (`324afd6`).
+Pilot Path QA + Hardening is ready for Controlled Pilot Session 1, but is not formally closed while current canonical memory policy still requires mobile QA for formal closure.
 
 ## Architecture Decision
-StockCheck is ready with conditions for a controlled accompanied pilot. Current engineering work is QA/hardening, not a new product feature.
+Final technical review result: READY WITH CONDITIONS for a controlled laptop/web pilot. Current work is real-user pilot evidence, not speculative UI polish or a new product feature.
 
 ## Completed Sub-steps
-- Cross-screen consistency pass 3 landed at `993da6f` (`Polish operational workspace consistency`).
-- Pass 3 covered Commercial / Compras-Ventas, Kardex, Production, and Recipes; approved visual consistency now covers Inventory, Bandeja / Incoming Documents, Ventas, Commercial / Compras-Ventas, Kardex, Production, and Recipes.
-- Pass 3 UI outcomes: compact Commercial search/clear behavior; standardized header actions across the pass; bounded table viewports with visible vertical scrollbars and accessible in-viewport horizontal scrollbars for Kardex/Production/Recipes where applicable; recipe behavior preserved.
-- Visual QA passed / good enough; no business logic or API behavior changed.
-- Cross-screen consistency pass 2 landed at `8170df3` (`Align sales workspace with inventory`).
-- Ventas workspace alignment: Ventas is now the clear primary title with company context secondary; `+ Proyección` and `+ Venta real` remain directly accessible; duplicate `Acciones rápidas` card removed; month filtering moved into compact toolbar/chips; summary KPI blocks compacted; content starts materially higher; sales section card treatment flattened.
-- Ventas table density/header treatment now aligns with Inventory/Bandeja; `+ Proyección` contrast corrected; mobile behavior preserved; visual QA passed.
-- Ventas preserved contracts: no business logic, API, or sales semantics changed.
-- Cross-screen consistency pass 1 landed at `64f592b` (`Align documents workspace with inventory`).
-- Inventory micro-polish: header top spacing was slightly increased; density/table layout unchanged.
-- Incoming Documents / Bandeja redesign: compact page header, primary `+ Documento`, grouped SII actions, compact search/summary, preserved status/target filters, and table visually/behaviorally aligned with Inventory.
-- Documents preserved UI contracts: one horizontal scrollbar, visible vertical scrollbar, frozen Proveedor / N° doc. / Fecha columns, preserved header/data alignment, and verified mobile behavior.
-- Visual QA passed; no business logic changes and no API/SII semantics changed.
-- Inventory visual redesign landed at `2f37b16` (`Redesign inventory workspace`).
-- Inventory is now denser and table-first: `Inventario` is the primary header anchor; search is closer to title/content; actions and summary are compact; filters and sort share a compact toolbar; the table starts materially higher and consumes more viewport.
-- Preserved UI contracts: frozen Product column, horizontal scroll, one visible horizontal scrollbar at the bottom of the table viewport, visible vertical scrollbar, aligned headings/data, and mobile behavior.
-- Preserved performance boundaries: `React.memo(HomeInventoryView)`, stable `HomeScreen` props, memoized Maps, cached formatters, no virtualization, and no backend/business logic changes; visual QA passed.
-- Inventory navigation performance hardening landed at `9dc60bb` (`Improve inventory navigation performance`).
-- Manual QA had found a consistent ~2 second delay opening Compra, Venta, Bandeja, Más, and other screens.
-- Root cause: `HomeInventoryView` was always mounted; unrelated `HomeScreen` state changes caused full inventory rerenders; roughly 800 products rendered in duplicated frozen/scrollable table structure; `Intl.NumberFormat` objects were repeatedly created per row/cell; committed/expected maps were rebuilt repeatedly; unstable props prevented the memo boundary.
-- Fix: cached `Intl.NumberFormat` formatters; added `React.memo` to `HomeInventoryView` with default shallow comparison; stabilized `HomeInventoryView` props/callbacks; removed unused unstable props; memoized committed/expected maps.
-- Validation: 53/53 frontend pure tests passed, typecheck passed, static Expo export passed, manual production-build test at `http://localhost:8082` confirmed navigation is fast again, business behavior unchanged, navigation semantics unchanged, repo clean after commit/push.
-- Frontend pure QA coverage landed at `e374a63` (`Add pilot frontend pure QA tests`).
-- Coverage includes importer helpers and pilot readiness X/4 logic.
-- Verification captured: 53 frontend pure tests passed, typecheck passed, Node built-in `node:test` runner, no new test dependency.
-- Backend pilot-critical QA passed at `e374a63` against confirmed DEV database `stockcheck_dev` using `backend/npm run test:pilot-critical`.
-- Backend verification covered build, audit logs, manual stock batches, purchase flow, sale flow, insufficient stock rejection, void sale, production completion, void production, and stock write-off.
-- Verified business behavior: purchases increase stock with Kardex/origin records; sales reduce FIFO stock with traceability; insufficient stock blocks sale without mutation; void sale restores stock and origin traceability; planned production does not move stock; completed production consumes materials and creates finished stock; production cost calculation/override works; void production reverses stock; write-off consumes FIFO/manual origins and records Kardex.
-- Post-test state: git working tree clean, HEAD remained `e374a63`, and tests produced no code changes.
+- Current canonical commit: `993da6f` (`Polish operational workspace consistency`).
+- Final readiness evidence captured: frontend pure QA 53/53; backend pilot-critical QA previously passed in DEV; purchase/sale/stock/Kardex manual QA passed; production QA passed; company isolation QA passed; laptop visual/responsive sanity passed; performance issue fixed; cross-screen consistency passes completed; no repo/product changes required before pilot.
+- Cross-screen consistency passes landed at `64f592b`, `8170df3`, and `993da6f`; approved visual consistency now covers Inventory, Bandeja / Incoming Documents, Ventas, Commercial / Compras-Ventas, Kardex, Production, and Recipes.
+- Preserved contracts across consistency passes: mobile behavior where checked, no business logic changes, no API/SII semantics changes, and recipe behavior preserved.
+- Inventory navigation performance hardening landed at `9dc60bb`; validation included 53/53 frontend pure tests, typecheck, static Expo export, and manual production-build QA at `http://localhost:8082` confirming fast navigation.
+- Frontend pure QA coverage and backend pilot-critical QA landed at `e374a63`; backend DEV verification covered purchase, sale, stock/Kardex, insufficient-stock rejection, voids, production completion/void, cost handling, and write-off behavior.
 
 ## Next Step
-Return to remaining Pilot Path QA + Hardening checks: company switch / isolation, Modo simple / Avanzado navigation, responsive laptop/mobile final sanity, and final pilot-readiness review after remaining QA.
+Execute Controlled Pilot Session 1: 60–90 minutes guided, laptop/web only, one real primary user plus one supervisor/admin. Session 2 should be 60–90 minutes with reduced prompting. Add a second user only after the core loop works without blockers.
 
 For local frontend browser QA, use `http://localhost:8082`; do not use `127.0.0.1` because backend CORS treats it as a different origin.
 
-Do not mark Pilot Path QA + Hardening complete until manual browser QA is done.
+Do not perform more speculative UI polish before real-user evidence.
+
+## Pilot Scope
+- Laptop/web only; mobile remains out of scope for this controlled pilot and required for formal milestone closure if current canonical memory policy says so.
+- One real primary user, one supervisor/admin, DEV/local/pilot data only, backend/PostgreSQL connected, known pilot company/companies, no public SaaS assumptions.
+- In scope: Inventory, Purchases, Sales, Commercial / Compras-Ventas, Bandeja / Incoming Documents, Kardex, Production, Recipes, company switching/isolation, simple/advanced navigation.
+- Out of scope: mobile, automatic SII connector, public SaaS, public signup, billing, BSV2, major new modules, broad refactors.
+
+## Stop Conditions
+Stop if data crosses companies; stock becomes incorrect; sale/production succeeds beyond available stock; a record saves under the wrong company; local fallback appears during a real-write pilot flow; latency/double-click causes a duplicate transaction; an irreversible transaction issue appears; a core purchase/sale/production flow cannot continue; or any workflow attempts to use BSV2.
+
+## Issue Classification
+Use BLOCKER, IMPORTANT, POLISH, FUTURE.
 
 ## Safety Boundary
 BSV2 and real business data are completely off-limits. Do not connect to, inspect, query, mutate, or use BSV2 for QA evidence.
