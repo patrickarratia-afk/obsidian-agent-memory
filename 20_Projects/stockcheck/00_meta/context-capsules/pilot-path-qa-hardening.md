@@ -23,6 +23,10 @@ Pilot Path QA + Hardening is the current engineering milestone after Pilot Onboa
 StockCheck is ready with conditions for a controlled accompanied pilot. Current engineering work is QA/hardening, not a new product feature.
 
 ## Completed Sub-steps
+- Cross-screen consistency pass 3 landed at `993da6f` (`Polish operational workspace consistency`).
+- Pass 3 covered Commercial / Compras-Ventas, Kardex, Production, and Recipes; approved visual consistency now covers Inventory, Bandeja / Incoming Documents, Ventas, Commercial / Compras-Ventas, Kardex, Production, and Recipes.
+- Pass 3 UI outcomes: compact Commercial search/clear behavior; standardized header actions across the pass; bounded table viewports with visible vertical scrollbars and accessible in-viewport horizontal scrollbars for Kardex/Production/Recipes where applicable; recipe behavior preserved.
+- Visual QA passed / good enough; no business logic or API behavior changed.
 - Cross-screen consistency pass 2 landed at `8170df3` (`Align sales workspace with inventory`).
 - Ventas workspace alignment: Ventas is now the clear primary title with company context secondary; `+ Proyección` and `+ Venta real` remain directly accessible; duplicate `Acciones rápidas` card removed; month filtering moved into compact toolbar/chips; summary KPI blocks compacted; content starts materially higher; sales section card treatment flattened.
 - Ventas table density/header treatment now aligns with Inventory/Bandeja; `+ Proyección` contrast corrected; mobile behavior preserved; visual QA passed.
@@ -50,7 +54,7 @@ StockCheck is ready with conditions for a controlled accompanied pilot. Current 
 - Post-test state: git working tree clean, HEAD remained `e374a63`, and tests produced no code changes.
 
 ## Next Step
-Cross-screen consistency next priority: small consistency polish batch for Commercial / Compras-Ventas, Kardex, Production, and Recipes.
+Return to remaining Pilot Path QA + Hardening checks: company switch / isolation, Modo simple / Avanzado navigation, responsive laptop/mobile final sanity, and final pilot-readiness review after remaining QA.
 
 For local frontend browser QA, use `http://localhost:8082`; do not use `127.0.0.1` because backend CORS treats it as a different origin.
 
