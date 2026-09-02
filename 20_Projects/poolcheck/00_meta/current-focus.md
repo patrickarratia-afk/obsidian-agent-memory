@@ -15,9 +15,9 @@ Branch: `main`
 
 HEAD:
 
-`73246d6 Add provider operational status filtering`
+`7e1347c Add facility management UI`
 
-Working tree was clean at the close of P1 7E-A.
+Working tree was clean at the close of P1 7E-B.
 
 ## Recently Completed
 
@@ -37,19 +37,9 @@ P1 portfolio filtering dimensions now covered:
 
 ## Current Objective
 
-P1 7E-B — Facility Management UI for owner admins.
+Pool → Facility assignment UI.
 
-Expected scope:
-
-- `/facilities` admin-only management route
-- navigation entry `Instalaciones`
-- Facility list
-- loading/error/empty states
-- create Facility
-- rename Facility
-- delete Facility with confirmation
-- friendly handling of `FACILITY_IN_USE`
-- responsive behavior consistent with existing PoolCheck UI
+Before implementation, confirm the exact slice/milestone label against the current Project Wiki and repository. Do not expand this into provider Facility management, Facility grants, or hierarchy redesign.
 
 ## Explicitly Deferred
 
@@ -104,3 +94,19 @@ Current preferred implementation model while native Codex quota is unavailable:
 DeepSeek V4 Flash through Hermes/OpenRouter.
 
 A GPT-5.5 review should be used for sensitive authorization/permission changes when quota is available.
+
+## Latest Milestone Closure — P1 7E-B
+
+- [x] Facility Management UI for owner admins completed.
+- [x] `/facilities` route added.
+- [x] Admin-only `Instalaciones` navigation added.
+- [x] Non-admin direct navigation protected with restricted state.
+- [x] Facility list, create, rename/edit, and delete UI implemented.
+- [x] `FACILITY_IN_USE` handled with friendly inline feedback.
+- [x] Pool → Facility assignment UI intentionally remains unimplemented.
+- [x] Provider Facility management remains deferred.
+- [x] GPT-5.5 final commit-gate: FINDINGS NONE / READY TO COMMIT.
+- [x] Project Wiki validator: valid=true, errors=0, warnings=0.
+- [x] Frontend typecheck, PoolCheck typecheck, and build passed.
+- [x] Integration suite was not run because `TEST_DATABASE_URL` was unavailable; accepted as non-blocking because 7E-B changed no backend/API/DB/generated code.
+- [x] Commit pushed: `7e1347c Add facility management UI`.

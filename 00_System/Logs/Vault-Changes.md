@@ -32,3 +32,13 @@ Log significant structural changes to the vault here. Minor edits to notes do no
 - Canonical deterministic validation passed with 0 errors and 0 warnings.
 - Updated PoolCheck Project Wiki bridge and operational retrieval path.
 - Current implementation focus remains P1 7E-B — Facility Management UI.
+
+## 2026-09-01 — PoolCheck P1 7E-B closed
+
+- Facility Management UI for owner admins completed and pushed.
+- Canonical PoolCheck HEAD: `7e1347c Add facility management UI`.
+- `/facilities` now supports admin-only list/create/edit/delete management.
+- `FACILITY_IN_USE` is handled without losing delete-dialog context.
+- Pool → Facility assignment UI remains the next product objective; exact slice label must be confirmed from current Project Wiki/repo before implementation.
+- Project Wiki remains canonical and validates with 0 errors / 0 warnings.
+- No backend, OpenAPI, generated-client, database, or migration changes were part of 7E-B.
