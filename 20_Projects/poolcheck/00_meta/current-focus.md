@@ -15,7 +15,7 @@ Branch: `main`
 
 HEAD:
 
-`bec57bc Add pool facility assignment UI`
+`04765c6 Add delegated maintenance and backwash UI`
 
 Working tree was clean at the close of P1 7E-B.
 
@@ -37,11 +37,13 @@ P1 portfolio filtering dimensions now covered:
 
 ## Current Objective
 
-Paused after successful closure of P1 7E-C.
+Paused after successful closure of P1 Delegated Maintenance & Backwash Provider UI.
 
-Before starting another product slice, confirm the next real objective from the current Project Wiki, repository state, and tests.
+The next known P1 roadmap candidate is corrective-action / verification workflow UI, followed later by provider dosage and cross-organization planned work / provider-member assignment where justified.
 
-Do not assume provider Facility management, Facility grants, or hierarchy redesign is next unless current canonical project state says so.
+Before implementation, confirm the next canonical slice from the current Project Wiki, repository state, authorization model, and tests.
+
+Do not start provider Facility management or Facility grants/inheritance by assumption; both remain unresolved/deferred.
 
 ## Explicitly Deferred
 
@@ -131,3 +133,24 @@ A GPT-5.5 review should be used for sensitive authorization/permission changes w
 - [x] Canonical typechecks and build passed.
 - [x] Integration suite remained non-blocking because no backend/API/DB/generated changes were made.
 - [x] Commit pushed: `bec57bc Add pool facility assignment UI`.
+
+## Latest Milestone Closure — P1 Delegated Maintenance & Backwash
+
+- [x] Provider delegated Pool workspace now exposes maintenance history.
+- [x] Authorized provider admin/technician can record maintenance when `canMaintain` permits.
+- [x] Provider delegated Pool workspace now exposes filter-backwash history.
+- [x] Authorized provider admin/technician can record backwash when `canBackwash` permits.
+- [x] Existing delegated measurement workflow preserved.
+- [x] Backend authorization/provenance remains authoritative.
+- [x] No backend, OpenAPI, generated-client, DB, schema, or migration changes.
+- [x] Delegated maintenance photo evidence intentionally disabled because current photo endpoints remain owner-scoped.
+- [x] Provider planned-work execution intentionally disabled in shared backwash component for this slice.
+- [x] Owner photo evidence and owner planned-work behavior preserved through default-compatible shared-component props.
+- [x] Provider Facility management remains unresolved/deferred.
+- [x] Facility grants/inheritance remain unresolved.
+- [x] Later P1 work remains pending: corrective-action/verification, provider dosage, and cross-org planned work/provider-member assignment where justified.
+- [x] GPT-5.5 final recheck: FINDINGS NONE / READY TO COMMIT.
+- [x] Typecheck and PoolCheck build passed.
+- [x] Integration skipped non-blockingly because TEST_DATABASE_URL was unavailable through the safe workflow and this slice made no backend/API/DB/generated changes.
+- [x] Project Wiki validator: valid=true, errors=0, warnings=0.
+- [x] Commit pushed: `04765c6 Add delegated maintenance and backwash UI`.

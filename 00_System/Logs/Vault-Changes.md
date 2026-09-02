@@ -54,3 +54,18 @@ Log significant structural changes to the vault here. Minor edits to notes do no
 - Project Wiki validates with 0 errors / 0 warnings.
 - No backend, OpenAPI, generated-client, database, migration, or test changes were part of 7E-C.
 - Project is paused pending confirmation of the next canonical product slice.
+
+## 2026-09-02 — PoolCheck P1 delegated maintenance/backwash closed
+
+- Canonical PoolCheck HEAD: `04765c6 Add delegated maintenance and backwash UI`.
+- Provider delegated Pool workspace now supports maintenance and filter-backwash history plus capability-gated creation.
+- Maintenance creation remains gated by provider role semantics plus `canMaintain`.
+- Backwash creation remains gated by provider role semantics plus `canBackwash`.
+- Delegated maintenance photo evidence is intentionally hidden because current maintenance-photo endpoints remain owner-scoped.
+- Provider planned-work execution is intentionally disabled in the reused backwash component for this slice.
+- Existing owner photo evidence and planned-work behavior remain unchanged.
+- No backend, OpenAPI, generated-client, database, schema, or migration changes were made.
+- Project Wiki validates with 0 errors / 0 warnings.
+- Remaining P1 roadmap work is explicitly retained: corrective-action/verification, provider dosage, and cross-org planned work/provider-member assignment where justified.
+- Provider Facility management and Facility grants/inheritance remain unresolved/deferred.
+- Project is paused before selecting/starting the next canonical slice.
