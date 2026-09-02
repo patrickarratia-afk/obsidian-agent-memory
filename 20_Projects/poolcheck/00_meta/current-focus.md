@@ -15,7 +15,7 @@ Branch: `main`
 
 HEAD:
 
-`7e1347c Add facility management UI`
+`bec57bc Add pool facility assignment UI`
 
 Working tree was clean at the close of P1 7E-B.
 
@@ -37,9 +37,11 @@ P1 portfolio filtering dimensions now covered:
 
 ## Current Objective
 
-Pool → Facility assignment UI.
+Paused after successful closure of P1 7E-C.
 
-Before implementation, confirm the exact slice/milestone label against the current Project Wiki and repository. Do not expand this into provider Facility management, Facility grants, or hierarchy redesign.
+Before starting another product slice, confirm the next real objective from the current Project Wiki, repository state, and tests.
+
+Do not assume provider Facility management, Facility grants, or hierarchy redesign is next unless current canonical project state says so.
 
 ## Explicitly Deferred
 
@@ -110,3 +112,22 @@ A GPT-5.5 review should be used for sensitive authorization/permission changes w
 - [x] Frontend typecheck, PoolCheck typecheck, and build passed.
 - [x] Integration suite was not run because `TEST_DATABASE_URL` was unavailable; accepted as non-blocking because 7E-B changed no backend/API/DB/generated code.
 - [x] Commit pushed: `7e1347c Add facility management UI`.
+
+## Latest Milestone Closure — P1 7E-C
+
+- [x] Owner-side Pool → Facility assignment UI completed.
+- [x] Pool creation supports Facility assignment.
+- [x] Existing Pools can be assigned to a Facility.
+- [x] Existing Pools can move between Facilities.
+- [x] Existing Pools can detach from a Facility with `facilityId: null`.
+- [x] Full PoolInput preservation reviewed and approved.
+- [x] Facility selector rejects malformed/non-canonical Facility IDs.
+- [x] Pool list, dashboard, Pool detail, and provider-portfolio cache invalidation handled as required.
+- [x] Admin authorization preserved.
+- [x] Provider Facility management remains out of scope.
+- [x] Facility grants/inheritance remain unimplemented.
+- [x] GPT-5.5 final recheck: FINDINGS NONE / READY TO COMMIT.
+- [x] Project Wiki validator: valid=true, errors=0, warnings=0.
+- [x] Canonical typechecks and build passed.
+- [x] Integration suite remained non-blocking because no backend/API/DB/generated changes were made.
+- [x] Commit pushed: `bec57bc Add pool facility assignment UI`.

@@ -42,3 +42,15 @@ Log significant structural changes to the vault here. Minor edits to notes do no
 - Pool → Facility assignment UI remains the next product objective; exact slice label must be confirmed from current Project Wiki/repo before implementation.
 - Project Wiki remains canonical and validates with 0 errors / 0 warnings.
 - No backend, OpenAPI, generated-client, database, or migration changes were part of 7E-B.
+
+## 2026-09-01 — PoolCheck P1 7E-C closed
+
+- Owner-side Pool → Facility assignment workflow completed and pushed.
+- Canonical PoolCheck HEAD: `bec57bc Add pool facility assignment UI`.
+- Pool creation now supports Facility assignment.
+- Existing Pools can assign, move, and detach from Facilities.
+- Provider-portfolio cache invalidation is included after Pool creation and Facility assignment changes.
+- Provider Facility management and Facility grants remain out of scope/unimplemented.
+- Project Wiki validates with 0 errors / 0 warnings.
+- No backend, OpenAPI, generated-client, database, migration, or test changes were part of 7E-C.
+- Project is paused pending confirmation of the next canonical product slice.
