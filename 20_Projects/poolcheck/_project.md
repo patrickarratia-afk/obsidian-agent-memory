@@ -4,7 +4,7 @@ scope: project
 project: poolcheck
 area: software-engineering
 status: active
-source_date: 2026-09-01
+source_date: 2026-09-02
 reviewed: true
 owner: patrick
 aliases: [PoolCheck, poolcheck-app]
@@ -65,6 +65,57 @@ Resolution rules:
 - Serena: symbols, references, structural code navigation
 - Graphify: optional architecture/dependency analysis
 - Git/tests/diff/status: final technical authority
+
+## Default Model-Routing Workflow
+
+GPT-5.5:
+- architecture
+- planning
+- security-sensitive inspection
+- auth/roles/capabilities
+- org/provider/facility isolation
+- API/data-model decisions
+- final review / commit-gate
+
+DeepSeek V4 Flash:
+- primary implementation workhorse
+- bounded frontend implementation
+- routine multi-file changes
+- tests
+- mechanical refactors
+- fixes from GPT reviews
+- documentation updates with clear acceptance criteria
+
+Default cycle:
+GPT-5.5 plans/reviews → DeepSeek implements → GPT-5.5 commit-gate → fixes if needed → commit/push
+
+Important:
+- Only one writing agent may modify a given working tree at a time.
+- Parallel read-only sessions are allowed.
+- Parallel implementation requires separate git worktrees/branches.
+
+## PoolCheck Skill Routing
+
+Enabled does NOT mean actually used.
+
+For important Hermes tasks:
+- prompts must explicitly specify relevant skills to load/use
+- agents must report at the end:
+  - skills actually loaded/used
+  - why
+  - relevant enabled skills deliberately not used
+  - why not
+
+PoolCheck skill routing:
+- obsidian: operational memory/continuity
+- security-and-hardening: auth, roles, capabilities, isolation, trust boundaries, sensitive inputs
+- api-and-interface-design: contracts, generated clients, API/module boundaries
+- design-md: hierarchy, layout, responsive operational UX
+- make-interfaces-feel-better: restrained UI polish
+- performance-optimization: only with actual performance evidence
+- defuddle: only for external web/document extraction
+
+Do not load every installed skill by default.
 
 ## Environment Protection
 

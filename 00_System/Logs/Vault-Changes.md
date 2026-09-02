@@ -69,3 +69,16 @@ Log significant structural changes to the vault here. Minor edits to notes do no
 - Remaining P1 roadmap work is explicitly retained: corrective-action/verification, provider dosage, and cross-org planned work/provider-member assignment where justified.
 - Provider Facility management and Facility grants/inheritance remain unresolved/deferred.
 - Project is paused before selecting/starting the next canonical slice.
+
+## 2026-09-02 — PoolCheck Provider Corrective Actions + Verification UI closed
+
+- Canonical PoolCheck HEAD: `2fccccf Add delegated corrective action verification UI`.
+- Delegated corrective-action history, admin management (mark applied / dismiss), and admin verification UI implemented frontend-only on provider Pool detail.
+- Non-admin users remain read-only even if capability flags exist; backend remains final authorization authority.
+- Manual measurement ID fallback added with strict canonical safe-integer validation.
+- OUT_OF_RANGE_EFFECTIVE_CONFIRMATION_REQUIRED two-step confirmation maintained.
+- Provider corrective creation, recommendations, apply-product, dosage, backend/API changes, and Facility changes explicitly excluded from this slice.
+- No raw grant/relationship IDs exposed; GPT-5.5 final commit-gate passed with FINDINGS NONE.
+- Existing delegated backend corrective/verification integration coverage already exists — frontend-only slice, integration not required.
+- Durable model-routing workflow and skill routing rules recorded in `_project.md`.
+- UI/UX audit planned as next quality milestone (GPT-5.5, read-only).

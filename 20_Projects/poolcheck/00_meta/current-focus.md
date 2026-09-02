@@ -15,9 +15,9 @@ Branch: `main`
 
 HEAD:
 
-`04765c6 Add delegated maintenance and backwash UI`
+`2fccccf Add delegated corrective action verification UI`
 
-Working tree was clean at the close of P1 7E-B.
+Working tree was clean at the close of Provider Corrective Actions + Verification UI.
 
 ## Recently Completed
 
@@ -27,6 +27,8 @@ Working tree was clean at the close of P1 7E-B.
 - [x] Provider Facility portfolio enrichment/filter
 - [x] Provider operational-status enrichment/filter
 - [x] Canonical Project Wiki 1.4.0 installed and validated (0 errors / 0 warnings)
+- [x] Delegated Maintenance & Backwash Provider UI
+- [x] Provider Corrective Actions + Verification UI
 
 P1 portfolio filtering dimensions now covered:
 
@@ -37,13 +39,9 @@ P1 portfolio filtering dimensions now covered:
 
 ## Current Objective
 
-Paused after successful closure of P1 Delegated Maintenance & Backwash Provider UI.
+Closure complete: Provider Corrective Actions + Verification UI delivered and pushed (2fccccf).
 
-The next known P1 roadmap candidate is corrective-action / verification workflow UI, followed later by provider dosage and cross-organization planned work / provider-member assignment where justified.
-
-Before implementation, confirm the next canonical slice from the current Project Wiki, repository state, authorization model, and tests.
-
-Do not start provider Facility management or Facility grants/inheritance by assumption; both remain unresolved/deferred.
+Next: separate full PoolCheck UI/UX audit (read-only, GPT-5.5). Do not start product features automatically. See "Next Quality Milestone" below.
 
 ## Explicitly Deferred
 
@@ -154,3 +152,76 @@ A GPT-5.5 review should be used for sensitive authorization/permission changes w
 - [x] Integration skipped non-blockingly because TEST_DATABASE_URL was unavailable through the safe workflow and this slice made no backend/API/DB/generated changes.
 - [x] Project Wiki validator: valid=true, errors=0, warnings=0.
 - [x] Commit pushed: `04765c6 Add delegated maintenance and backwash UI`.
+
+## Latest Milestone Closure — Provider Corrective Actions + Verification UI
+
+- [x] Implemented frontend-only on delegated provider Pool detail.
+- [x] corrective-action history displayed.
+- [x] provider admin + canManageCorrectiveActions: mark pending corrective action applied, dismiss pending corrective action.
+- [x] provider admin + canVerify: verify applied/unverified corrective actions.
+- [x] non-admin users remain read-only even if capability flags exist.
+- [x] backend remains final authorization authority.
+- [x] Verification: normal recent measurement selector retained.
+- [x] Recent measurements NOT treated as exhaustive (backend list is capped).
+- [x] Manual fallback: "Usar otra medición por ID" with canonical positive safe integer validation.
+- [x] Rejects whitespace, leading zero, sign, decimals, scientific notation, unsafe integers.
+- [x] No arbitrary measurement fetch by ID.
+- [x] Backend validates pool/org/access/timing/original measurement/required parameter.
+- [x] Corrective parameter value shown in measurement options.
+- [x] Parameter-missing measurements show "sin dato" and are disabled.
+- [x] OUT_OF_RANGE_EFFECTIVE_CONFIRMATION_REQUIRED remains explicit two-step confirmation.
+- [x] Relevant state changes clear stale confirmation.
+- [x] Explicitly NOT added: provider corrective creation, recommendations, apply-product, dosage/inventory, canDose changes, backend/API/OpenAPI/generated/DB/schema changes, Facility changes, planned-work changes, owner redesign.
+- [x] Security: no raw createdByUserId/resolvedByUserId/verifiedByUserId/grant/relationship IDs exposed.
+- [x] GPT-5.5 final commit-gate: FINDINGS NONE / READY TO COMMIT.
+- [x] pnpm run typecheck:poolcheck PASS.
+- [x] pnpm run build:poolcheck PASS.
+- [x] git diff --check PASS.
+- [x] Prior full/typecheck validations in slice passed.
+- [x] Integration not required for frontend-only change; existing delegated backend corrective/verification integration coverage already exists.
+- [x] Commit pushed: `2fccccf Add delegated corrective action verification UI`.
+
+## Next Quality Milestone
+
+Planned, not started.
+
+After this milestone, perform a separate full PoolCheck UI/UX audit.
+
+Audit model:
+- GPT-5.5
+- READ ONLY first
+- explicit skills:
+  - obsidian
+  - design-md
+  - make-interfaces-feel-better
+
+Audit by surface rather than one giant redesign:
+- global shell/navigation
+- dashboard/pools
+- owner Pool detail
+- Facilities
+- Provider Portfolio
+- Provider Pool Detail
+- operational cards/forms/dialogs
+- loading/empty/error states
+- mobile/responsive
+- global visual consistency
+
+Rules:
+- preserve existing PoolCheck operational design language
+- no global redesign by assumption
+- group systemic findings
+- prioritize HIGH/MEDIUM/LOW
+- DeepSeek implements resulting improvements in bounded slices
+- GPT-5.5 reviews each slice
+
+Also note that the same UI/UX audit methodology is intended for StockCheck separately.
+
+## Next Product Roadmap
+
+Do not automatically start a product feature.
+After the UI/UX audit planning/decision, remaining P1 product candidates still include:
+- provider product/inventory dosage
+- cross-org planned work/provider-member assignment where justified
+
+Provider Facility management and Facility grant inheritance remain unresolved/deferred and must not be started by assumption.
