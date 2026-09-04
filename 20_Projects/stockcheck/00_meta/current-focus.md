@@ -11,12 +11,19 @@ tags: [focus, active]
 
 ## Active Task
 
-Controlled Pilot Session 1 for Pilot Path QA + Hardening.
+Pilot Session 1 completed for controlled laptop/web scope. Pilot Path QA + Hardening formally closed in operational memory.
 
-Architecture decision: StockCheck is READY WITH CONDITIONS for a controlled laptop/web pilot. Current work is real-user pilot evidence, not speculative UI polish or a new product feature.
+Before opening SII Integration or Analytics/Pivot implementation, the next project phase must be decided deliberately.
 
 ## Recently Completed
 
+- [x] Operational page performance optimization (`d5c40b1`)
+- [x] Purchase OCR lot UX — lot/expiry capture on real Purchase before/after Apply, values survive apply/revert; OC still omits lot/expiry until conversion (`ed3b5e1`)
+- [x] Sale OCR stock-origin UX + company isolation — stock-origin/batch selection on real Sale before/after Apply, FIFO fallback, selections survive apply/revert; OV omits stock origin until conversion; hardcoded companyId=1 fixed to activeCompanyId (`0b649a2`)
+- [x] Pilot Session 1 completed (controlled laptop/web) — Block A: PASS. Block B: Bandeja PASS, Recetas PASS, Producción PASS, Aislamiento entre empresas PASS, Navegación simple/avanzada PASS. Mobile QA outside laptop pilot scope. BSV2 not part of this evidence. Does not imply public SaaS readiness.
+  - Finding 1 — DEV role config: EXPO_PUBLIC_STOCKCHECK_ADMIN_API_KEY out of sync with backend. Resolved by synchronizing keys. DEV config issue, not a product defect.
+  - Finding 2 — Purchase OCR lot UX (CLOSED, `ed3b5e1`): real Purchase now supports lot/expiry capture — values are editable before Apply, survive apply/revert. Purchase Order (OC) does NOT assign lot/expiry; lot is assigned only when OC becomes a real Purchase.
+  - Finding 3 — Sale OCR stock-origin UX + company isolation (CLOSED, `0b649a2`): real Sale supports existing stock-origin/batch selection before Apply and after Apply; FIFO remains valid fallback; selections survive apply/revert. Sales Order (OV) does NOT assign stock origin; stock origin is assigned only when OV becomes a real Sale. Fixed hardcoded companyId=1 in SaleForm — now uses activeCompanyId and clears stock-origin cache on company switch.
 - [x] Pilot preflight correction (`b50aaf3`) — removed remaining user-facing Business V2 / BSV2 references from DEV UI and login copy, replaced `Desarmar producto` terminology with `Revertir producción`, visually aligned the reverse-production form with current StockCheck UI, preserved production/unbuild semantics, made no API or business-logic changes, passed visual QA, passed frontend pure tests 53/53, typecheck, and static export; discovered and corrected before Pilot Session 1
 - [x] Final technical review for controlled laptop/web pilot (`993da6f`) — READY WITH CONDITIONS for a controlled pilot using DEV/local/pilot data, backend/PostgreSQL connected, known pilot company/companies, one real primary user, and one supervisor/admin; no repo/product changes required before pilot; milestone is not formally closed while canonical memory policy still requires mobile QA for formal closure
 - [x] Cross-screen consistency pass 3 (`993da6f`) — Commercial / Compras-Ventas, Kardex, Production, and Recipes consistency polish captured: Commercial compact search/clear behavior, standardized header actions, and improved visual consistency; Kardex standardized header actions plus bounded operational table viewport with visible vertical scrollbar and accessible in-viewport horizontal scrollbar aligned with Inventory; Production compact command area, standardized header actions, and bounded table viewport with accessible scrollbars; Recipes full consistency review, standardized header actions, shared bounded table viewport, and preserved recipe behavior; visual QA passed / good enough; no business logic or API behavior changed
@@ -44,18 +51,6 @@ Architecture decision: StockCheck is READY WITH CONDITIONS for a controlled lapt
 
 ## Next Session
 
-Execute Controlled Pilot Session 1: a 60–90 minute guided laptop/web session with one real primary user and one supervisor/admin. Add a second user only after the core loop works without blockers.
+Pilot Session 1 closed. Next project phase undecided — decide deliberately before opening SII Integration or Analytics/Pivot implementation. Both roadmap items remain unstarted.
 
-Pilot preflight fix is complete at `b50aaf3`; resume Pilot Session 1 rather than adding more speculative polish.
-
-Do not perform more speculative UI polish before real-user evidence. Do not mark Pilot Path QA + Hardening formally closed while mobile QA remains required by current canonical memory policy.
-
-For StockCheck frontend local browser testing, use `http://localhost:8082`; do not use `127.0.0.1` because backend CORS treats it as a different origin.
-
-Pilot scope is laptop/web only, DEV/local/pilot data only, backend/PostgreSQL connected, known pilot company/companies, no public SaaS assumptions. In scope: Inventory, Purchases, Sales, Commercial / Compras-Ventas, Bandeja / Incoming Documents, Kardex, Production, Recipes, company switching/isolation, and simple/advanced navigation. Out of scope: mobile, automatic SII connector, public SaaS, public signup, billing, BSV2, major new modules, and broad refactors.
-
-Stop the pilot if data crosses companies, stock becomes incorrect, sale/production succeeds beyond available stock, a record saves under the wrong company, local fallback appears during a real-write pilot flow, latency/double-click causes a duplicate transaction, an irreversible transaction issue appears, a core purchase/sale/production flow cannot continue, or any workflow attempts to use BSV2.
-
-Issue classification during pilot: BLOCKER, IMPORTANT, POLISH, FUTURE.
-
-BSV2 and real business data remain prohibited. Do not connect to, inspect, query, mutate, or use BSV2 for QA evidence.
+Deferred/out-of-scope during pilot does not imply prioritization: mobile QA, public SaaS, and BSV2 remain separate concerns not addressed by this pilot evidence.

@@ -70,7 +70,20 @@ Log significant structural changes to the vault here. Minor edits to notes do no
 - Provider Facility management and Facility grants/inheritance remain unresolved/deferred.
 - Project is paused before selecting/starting the next canonical slice.
 
-## 2026-09-02 — PoolCheck Provider Corrective Actions + Verification UI closed
+## 2026-09-04 — StockCheck performance milestone + strategic roadmap
+
+- Recorded operational page performance optimization (`d5c40b1`) in current-focus.md Recently Completed: lazy mounting, reduced fetches, memoization, 53/53 tests, TypeScript, manual QA all PASS.
+- Recorded post-pilot strategic roadmap (SII Integration, Analytics/Pivot Decision Support) as agreed direction. No implementation started.
+- Updated current-focus.md Active Task, Recently Completed, and Next Session sections.
+- No performance milestone touches frontend tests, TypeScript, business/API semantics, or company isolation.
+- Pilot Session 1 closed — next phase undecided.
+
+## 2026-09-04 — StockCheck pilot memory closeout
+
+- StockCheck Pilot Session 1 completed and formally closed. Pilot Path QA + Hardening reviewed/closed.
+- Purchase OCR lot UX resolved (`ed3b5e1`): real Purchase now supports lot/expiry capture before/after Apply; OC correctly omits lot/expiry until conversion.
+- Sale OCR stock-origin UX + company isolation resolved (`0b649a2`): real Sale supports stock-origin/batch selection before/after Apply; FIFO fallback; OV omits stock origin until conversion; hardcoded companyId=1 fixed to activeCompanyId in SaleForm.
+- Next project phase deliberately undecided — candidates: SII Integration, Analytics/Pivot Decision Support. Neither started.
 
 - Canonical PoolCheck HEAD: `2fccccf Add delegated corrective action verification UI`.
 - Delegated corrective-action history, admin management (mark applied / dismiss), and admin verification UI implemented frontend-only on provider Pool detail.
