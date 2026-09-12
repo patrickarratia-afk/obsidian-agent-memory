@@ -11,12 +11,13 @@ tags: [focus, active]
 
 ## Active Task
 
-Pilot Session 1 completed for controlled laptop/web scope. Pilot Path QA + Hardening formally closed in operational memory.
+SII DEV integration hardening is complete and pushed. Real SII runtime for company 1 is verified in DEV, while destructive/configurable SII regression tests are isolated to the dedicated persistent regression company.
 
-Before opening SII Integration or Analytics/Pivot implementation, the next project phase must be decided deliberately.
+No further SII architecture change is currently open. The next concrete StockCheck task has not yet been selected deliberately. BSV2 remains completely out of scope.
 
 ## Recently Completed
 
+- [x] SII DEV hardening closed (`8d3884d`, `6d59b61`) — real SII runtime for company 1 verified in DEV; PFX, issued/received sync, dedupe, private R2 storage and decimal XML parsing validated; decimal parser corrected; destructive/configurable SII sync regressions isolated to persistent company 7 (`__STOCKCHECK_SII_REGRESSION__`); XML regressions safely reuse the existing company SII RUT; XML cleanup now deletes local/R2 storage objects; full `npm run build` and final `npm run test:sii` passed; real integration id 256 remained intact; no real SII call from connector unit test; BSV2 untouched.
 - [x] Operational page performance optimization (`d5c40b1`)
 - [x] Purchase OCR lot UX — lot/expiry capture on real Purchase before/after Apply, values survive apply/revert; OC still omits lot/expiry until conversion (`ed3b5e1`)
 - [x] Sale OCR stock-origin UX + company isolation — stock-origin/batch selection on real Sale before/after Apply, FIFO fallback, selections survive apply/revert; OV omits stock origin until conversion; hardcoded companyId=1 fixed to activeCompanyId (`0b649a2`)
@@ -51,6 +52,6 @@ Before opening SII Integration or Analytics/Pivot implementation, the next proje
 
 ## Next Session
 
-Pilot Session 1 closed. Next project phase undecided — decide deliberately before opening SII Integration or Analytics/Pivot implementation. Both roadmap items remain unstarted.
+SII DEV hardening is closed at `6d59b61` on `main` / `origin/main`. Do not reopen the completed hardening work unless new evidence appears.
 
-Deferred/out-of-scope during pilot does not imply prioritization: mobile QA, public SaaS, and BSV2 remain separate concerns not addressed by this pilot evidence.
+Choose the next concrete StockCheck task deliberately before implementation. Analytics/Pivot Decision Support remains unstarted. Mobile QA and public SaaS remain separate concerns. BSV2 remains completely off-limits.
