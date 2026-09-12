@@ -11,12 +11,27 @@ tags: [focus, active]
 
 ## Active Task
 
-SII DEV integration hardening is complete and pushed. Real SII runtime for company 1 is verified in DEV, while destructive/configurable SII regression tests are isolated to the dedicated persistent regression company.
+Business V3 is now the current StockCheck operational test environment.
 
-No further SII architecture change is currently open. The next concrete StockCheck task has not yet been selected deliberately. BSV2 remains completely out of scope.
+Canonical code remains `main`. `business-v3` was created directly from current `main` so the recent Odoo-like commercial, traceability, reservation, partial-delivery, production, SII and R2 improvements remain intact. BSV3 adds only reproducible local startup tooling on top of that baseline.
+
+BSV3 runtime:
+- branch: `business-v3`
+- HEAD: `a101fba` (`Add reproducible Business V3 local startup`)
+- remote: `origin/business-v3` at the same SHA
+- backend: `http://localhost:8082`
+- frontend: `http://localhost:19007`
+- database: `stockcheck_business_v3`
+- allowed companies: `1,2`
+- permanent `.env` and `backend/.env` remain DEV and are not rewritten by the BSV3 starters
+
+`stockcheck_business_v3` is an independent clone of the former BSV2 business database `stockcheck_business_v1`. The source BSV2 database remains untouched and backed up. BSV2 is now frozen as reference/history/backup rather than the active path.
+
+Do not open a PR from `business-v3` to `main` by assumption. Validate BSV3 in real operational use first. If a genuinely missing BSV2 behavior is discovered later, reimplement it against modern `main`/BSV3 rather than blindly cherry-picking old BSV2 code.
 
 ## Recently Completed
 
+- [x] Business V3 operational environment created and published (`a101fba`) — `business-v3` created directly from `main` `60f6ddf`; `stockcheck_business_v3` cloned independently from BSV2 business data; clone verified exact on core counts; all current main migrations already applied with no pending main migrations; four historical BSV2-only migration filenames retained harmlessly in migration history; copied BSV3 DB contains no SII integration config or SII sync runs; modern main backend successfully ran over cloned data; visual read-only QA passed; CORS isolated to `http://localhost:19007`; reproducible BSV3 backend/web starters added without modifying permanent DEV env files; end-to-end startup test passed with 70 products, 19 productions, HTTP 200 frontend and correct CORS; DEV `8081` remained untouched; branch pushed to `origin/business-v3`. BSV2 frozen as reference/history/backup; no PR to main yet.
 - [x] SII DEV hardening closed (`8d3884d`, `6d59b61`) — real SII runtime for company 1 verified in DEV; PFX, issued/received sync, dedupe, private R2 storage and decimal XML parsing validated; decimal parser corrected; destructive/configurable SII sync regressions isolated to persistent company 7 (`__STOCKCHECK_SII_REGRESSION__`); XML regressions safely reuse the existing company SII RUT; XML cleanup now deletes local/R2 storage objects; full `npm run build` and final `npm run test:sii` passed; real integration id 256 remained intact; no real SII call from connector unit test; BSV2 untouched.
 - [x] Operational page performance optimization (`d5c40b1`)
 - [x] Purchase OCR lot UX — lot/expiry capture on real Purchase before/after Apply, values survive apply/revert; OC still omits lot/expiry until conversion (`ed3b5e1`)
@@ -52,6 +67,16 @@ No further SII architecture change is currently open. The next concrete StockChe
 
 ## Next Session
 
-SII DEV hardening is closed at `6d59b61` on `main` / `origin/main`. Do not reopen the completed hardening work unless new evidence appears.
+Continue from BSV3, not BSV2.
 
-Choose the next concrete StockCheck task deliberately before implementation. Analytics/Pivot Decision Support remains unstarted. Mobile QA and public SaaS remain separate concerns. BSV2 remains completely off-limits.
+Start BSV3 with:
+- `npm run business-v3:backend`
+- `npm run business-v3:web`
+
+Then validate normal operational workflows against the cloned business data. Treat `main` as canonical code and `business-v3` as the isolated operational test branch.
+
+Do not merge BSV3 into `main` yet. Do not modify or overwrite `stockcheck_business_v1`. Do not revive the frozen BSV2 integration branch unless new evidence requires it.
+
+If a behavior from BSV2 appears missing during real use, inspect the modern BSV3/main implementation first and reimplement only the missing behavior if still justified. The two previously identified BSV2-only contact-lock UX guards for OV→sale and OC→purchase remain intentionally unported unless real use shows they are needed.
+
+SII DEV hardening remains closed. Mobile QA, public SaaS readiness and Analytics/Pivot Decision Support remain separate future concerns.
