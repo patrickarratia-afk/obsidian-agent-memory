@@ -17,8 +17,11 @@ Canonical code remains `main`. `business-v3` was created directly from current `
 
 BSV3 runtime:
 - branch: `business-v3`
-- HEAD: `a101fba` (`Add reproducible Business V3 local startup`)
+- HEAD: `0b7f58b` (`Enable SII runtime for Business V3`)
 - remote: `origin/business-v3` at the same SHA
+- SII real: company 1 uses `sii_direct`, validated end-to-end in BSV3
+- SII runtime secrets: local ignored file `backend/.env.business-v3-sii.local`; never commit
+- document storage: isolated local BSV3 root under `~/.local/share/stockcheck/business-v3/uploads`
 - backend: `http://localhost:8082`
 - frontend: `http://localhost:19007`
 - database: `stockcheck_business_v3`
@@ -31,6 +34,7 @@ Do not open a PR from `business-v3` to `main` by assumption. Validate BSV3 in re
 
 ## Recently Completed
 
+- [x] BSV3 real SII operational validation (`0b7f58b`) — BSV3 backend starter now requires and loads the ignored local SII runtime secret file; `NODE_ENV=production`, live SII enablement, PFX presence/password and isolated local document storage are validated before startup; real `sii_direct` integration configured for company 1 / RUT 76337063-1 through the official API; first real both-direction sync succeeded with 8 documents created, 0 duplicates ignored and 0 failures; 8 XML files stored in the isolated BSV3 document root; second sync succeeded with no documents to process and left SII document count, max incoming-document ID and physical-file count unchanged, confirming safe repeat execution; DEV remained untouched on 8081. Historical cloned document storage audited: 45/50 manual-upload files recovered and copied with SHA-256 equality; 5 source files are physically missing locally (incoming IDs 77–81, including manual PDFs 919–922); no DB rows were rewritten and no XML was substituted for missing manual originals. Known manual/SII overlap: invoice 922 exists as linked manual upload and as a new SII document; do not auto-merge by assumption.
 - [x] Business V3 operational environment created and published (`a101fba`) — `business-v3` created directly from `main` `60f6ddf`; `stockcheck_business_v3` cloned independently from BSV2 business data; clone verified exact on core counts; all current main migrations already applied with no pending main migrations; four historical BSV2-only migration filenames retained harmlessly in migration history; copied BSV3 DB contains no SII integration config or SII sync runs; modern main backend successfully ran over cloned data; visual read-only QA passed; CORS isolated to `http://localhost:19007`; reproducible BSV3 backend/web starters added without modifying permanent DEV env files; end-to-end startup test passed with 70 products, 19 productions, HTTP 200 frontend and correct CORS; DEV `8081` remained untouched; branch pushed to `origin/business-v3`. BSV2 frozen as reference/history/backup; no PR to main yet.
 - [x] SII DEV hardening closed (`8d3884d`, `6d59b61`) — real SII runtime for company 1 verified in DEV; PFX, issued/received sync, dedupe, private R2 storage and decimal XML parsing validated; decimal parser corrected; destructive/configurable SII sync regressions isolated to persistent company 7 (`__STOCKCHECK_SII_REGRESSION__`); XML regressions safely reuse the existing company SII RUT; XML cleanup now deletes local/R2 storage objects; full `npm run build` and final `npm run test:sii` passed; real integration id 256 remained intact; no real SII call from connector unit test; BSV2 untouched.
 - [x] Operational page performance optimization (`d5c40b1`)
@@ -73,7 +77,9 @@ Start BSV3 with:
 - `npm run business-v3:backend`
 - `npm run business-v3:web`
 
-Then validate normal operational workflows against the cloned business data. Treat `main` as canonical code and `business-v3` as the isolated operational test branch.
+BSV3 is now the primary operational test environment and has real SII connectivity validated. Treat `main` as canonical code and `business-v3` as the isolated operational branch for real workflow validation.
+
+The next operational focus is normal use of Bandeja / Compras / Ventas / Inventario against BSV3 data. Review manual/SII overlaps deliberately before linking or classifying; invoice 922 is the first known overlap. Do not auto-merge historical manual uploads with SII documents by document number alone.
 
 Do not merge BSV3 into `main` yet. Do not modify or overwrite `stockcheck_business_v1`. Do not revive the frozen BSV2 integration branch unless new evidence requires it.
 
