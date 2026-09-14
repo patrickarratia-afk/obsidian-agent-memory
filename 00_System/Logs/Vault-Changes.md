@@ -98,3 +98,13 @@ Log significant structural changes to the vault here. Minor edits to notes do no
 
 - 2026-09-13 — Closed BSV3 SII document UX + auto-link V1 at `350e9db`: official SII XML retained as source backup; readable invoice viewer added; DTE 33 exact-match auto-link implemented transactionally without creating commercial entities or stock movements; historical issued SII 82–85 reconciled to existing sales; received SII 86–89 intentionally remain extracted with zero exact purchase candidates; final company 1 core counts remained unchanged (33 purchases / 70 purchase lines / 42 sales / 192 sale lines / 371 stock movements / 59 incoming documents).
 - 2026-09-13 — Synchronized validated BSV3 product improvements back to main. Product commits for document storage, DTE units/additional taxes, readable SII summary/viewer and transactional DTE 33 auto-link were promoted to `main`, producing canonical main HEAD `21aa4c9`. Updated main was then merged back into `business-v3`, producing BSV3 HEAD `06b0c85`. Main is now an ancestor of BSV3 and the only remaining BSV3-only content is environment/runtime tooling (`package.json` startup entries plus the two Business V3 start scripts). Recorded policy: BSV3 is for operational validation; functional improvements must move promptly to main to prevent product divergence.
+
+
+## 2026-09-14 — Agent Memory terminology clarified
+
+- Clarified that `StockCheck-Agent-Memory` is the Agent Memory repository used for compact operational continuation context, not Patrick's personal Obsidian vault.
+- Replaced misleading `Obsidian Agent Memory` / `Obsidian Memory` terminology in StockCheck routing and continuation documents with `Agent Memory repository`.
+- Updated global retrieval and session-closeout wording where references specifically meant the Agent Memory repository.
+- Preserved genuine Obsidian compatibility terminology for Bases, Canvas, vault structure and related tooling.
+- Authority remains unchanged: repo/tests → Project Wiki → Agent Memory.
+- No StockCheck repo, Project Wiki, Hermes Projects router or PatrickA Obsidian personal notes were modified by this terminology cleanup.

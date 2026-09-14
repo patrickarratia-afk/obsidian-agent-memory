@@ -13,9 +13,9 @@ tags: [bridge, reference]
 
 The StockCheck `.project-wiki/` (at canonical repo root) is the **durable memory layer** — it stores decisions, requirements, architecture documentation, ADRs, project state, and indexed knowledge.
 
-## Role of Obsidian Agent Memory
+## Role of Agent Memory
 
-This vault is a **compact operational continuation layer** — it stores only the minimum facts needed to resume work efficiently between sessions. It does NOT duplicate Project Wiki content.
+This repository is a **compact operational continuation layer** — it stores only the minimum facts needed to resume work efficiently between sessions. It does NOT duplicate Project Wiki content.
 
 ## Capsule → Project Wiki Escalation
 
@@ -30,7 +30,7 @@ When a context capsule's answer is insufficient:
 
 ## Repo/Tests Override
 
-If any memory layer (Project Wiki or Obsidian) conflicts with current repo code, Git history, migrations, or passing tests → **trust the repo/tests.** Flag the conflict but do not silently ignore it.
+If any memory layer (Project Wiki or Agent Memory) conflicts with current repo code, Git history, migrations, or passing tests → **trust the repo/tests.** Flag the conflict but do not silently ignore it.
 
 ## Tool Roles
 
@@ -39,7 +39,7 @@ If any memory layer (Project Wiki or Obsidian) conflicts with current repo code,
 | Graphify | Current architecture, dependency maps, codebase queries |
 | Serena | Symbol lookups, references, declarations |
 | Project Wiki | Durable requirements, decisions, project state |
-| Obsidian Memory | Session continuation context |
+| Agent Memory | Session continuation context |
 
 ## BSV2 Prohibition
 

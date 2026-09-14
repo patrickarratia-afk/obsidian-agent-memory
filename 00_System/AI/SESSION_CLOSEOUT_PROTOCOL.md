@@ -10,13 +10,13 @@ tags: [system, protocol]
 
 What to do — and what NOT to do — when a coding session ends. Designed for AI tools and humans alike.
 
-**Default: leave Obsidian vault unchanged.** Update only when a clear trigger below is met.
+**Default: leave the Agent Memory repository unchanged.** Update only when a clear trigger below is met.
 
 ---
 
 ## Update Triggers
 
-### Update Obsidian only when operational continuation context materially changes
+### Update Agent Memory only when operational continuation context materially changes
 
 | What changed in repo | What to update in vault |
 |---------------------|------------------------|
@@ -26,7 +26,7 @@ What to do — and what NOT to do — when a coding session ends. Designed for A
 | A durable boundary changed and a capsule would otherwise become incorrect | Relevant context capsule — update facts only |
 | Staleness threshold exceeded per STALENESS_POLICY | Relevant capsule — re-verify and update `source_date` |
 
-### Do NOT update Obsidian merely because
+### Do NOT update Agent Memory merely because
 
 - Styling changed
 - A small bug was fixed

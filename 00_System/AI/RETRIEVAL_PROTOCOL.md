@@ -61,9 +61,9 @@ Start at **Tiers 0–2 only**. Escalate to Tier 3+ only if the needed fact is st
 Authority order for StockCheck:
 1. **Current repo code, Git history, migrations, passing tests** — always source of truth
 2. **StockCheck `.project-wiki/`** — durable decisions, requirements, architecture, project state
-3. **Obsidian Agent Memory** — compact operational context and session continuity
+3. **Agent Memory repository** — compact operational context and session continuity
 
-If Obsidian conflicts with Project Wiki, prefer Project Wiki unless repo code disproves it.
+If Agent Memory conflicts with Project Wiki, prefer Project Wiki unless repo code disproves it.
 If either memory layer conflicts with repo/tests, trust repo/tests.
 
 ## Tool Roles
@@ -73,7 +73,7 @@ If either memory layer conflicts with repo/tests, trust repo/tests.
 | Graphify | Current architecture/dependency maps |
 | Serena | Current symbols/references |
 | Project Wiki | Durable project knowledge |
-| Obsidian Agent Memory | Compact operational continuation context |
+| Agent Memory repository | Compact operational continuation context |
 
 ## When Capsules Are Preferred Over Meta Notes
 

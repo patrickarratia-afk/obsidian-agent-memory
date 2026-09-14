@@ -63,7 +63,7 @@ BSV2 and real business data are completely off-limits. Do not connect to, inspec
 `splitCsvLine` has a pre-existing CSV edge case where quoted empty fields can parse incorrectly. Do not promote it to a blocker unless later QA proves impact.
 
 ## Operational Memory Note
-Obsidian materially reduced StockCheck context retrieval in A/B testing and should remain part of the standard StockCheck agent workflow after milestone-closing or operationally significant commits.
+Agent Memory materially reduced StockCheck context retrieval in A/B testing and should remain part of the standard StockCheck agent workflow after milestone-closing or operationally significant commits.
 
 ## Authority
 Repo/tests > Project Wiki > this capsule. If repo state contradicts this capsule, update here.

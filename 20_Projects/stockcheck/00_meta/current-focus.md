@@ -79,7 +79,7 @@ Current synchronized baseline:
 - [x] Frontend redesign Phase 5 — Production (`fa89ac1`)
 - [x] Pilot Onboarding + Simple Mode Readiness (`324afd6`)
 - [x] Project Wiki installed and committed in canonical repo
-- [x] Obsidian Agent Memory scaffold created for StockCheck
+- [x] Agent Memory scaffold created for StockCheck
 
 ## Verified Baseline
 

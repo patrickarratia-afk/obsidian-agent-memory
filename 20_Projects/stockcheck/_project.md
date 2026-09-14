@@ -19,7 +19,7 @@ tags: [project, stockcheck]
 
 ## Purpose
 
-Lightweight operational-memory layer for StockCheck development sessions. This vault stores only the minimum continuation context needed to resume work efficiently.
+Lightweight operational-memory layer for StockCheck development sessions. This repository stores only the minimum continuation context needed to resume work efficiently.
 
 **It does not duplicate the Project Wiki.**
 
@@ -29,10 +29,10 @@ Lightweight operational-memory layer for StockCheck development sessions. This v
 |----------|--------|------|
 | 1 | Current repo code, Git history, migrations, passing tests | Ultimate source of truth |
 | 2 | `.project-wiki/` at canonical repo path | Durable decisions, requirements, architecture, project state |
-| 3 | This Obsidian vault | Compact operational context and session continuity |
+| 3 | This Agent Memory repository | Compact operational context and session continuity |
 
 **Resolution rules:**
-- Obsidian vs Project Wiki → prefer Project Wiki unless repo code disproves it
+- Agent Memory vs Project Wiki → prefer Project Wiki unless repo code disproves it
 - Either memory layer vs repo/tests → trust repo/tests
 
 ## Path to Durable Knowledge
