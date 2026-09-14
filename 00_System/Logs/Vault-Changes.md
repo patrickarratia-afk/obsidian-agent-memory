@@ -95,3 +95,5 @@ Log significant structural changes to the vault here. Minor edits to notes do no
 - Existing delegated backend corrective/verification integration coverage already exists — frontend-only slice, integration not required.
 - Durable model-routing workflow and skill routing rules recorded in `_project.md`.
 - UI/UX audit planned as next quality milestone (GPT-5.5, read-only).
+
+- 2026-09-13 — Closed BSV3 SII document UX + auto-link V1 at `350e9db`: official SII XML retained as source backup; readable invoice viewer added; DTE 33 exact-match auto-link implemented transactionally without creating commercial entities or stock movements; historical issued SII 82–85 reconciled to existing sales; received SII 86–89 intentionally remain extracted with zero exact purchase candidates; final company 1 core counts remained unchanged (33 purchases / 70 purchase lines / 42 sales / 192 sale lines / 371 stock movements / 59 incoming documents).
