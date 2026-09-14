@@ -47,7 +47,14 @@ P1 portfolio filtering dimensions now covered:
 
 No product feature is currently active.
 
-Repository, Project Wiki, and Agent Memory are being synchronized after the post-corrective operational milestones.
+PoolCheck knowledge and routing synchronization was completed and validated on 2026-09-14:
+
+- Project Wiki synchronized in repository commit `506392c`
+- Agent Memory synchronized in commit `dbedba3`
+- Hermes Projects `poolcheck` activated as routing-only project
+- `poolcheck-development` skill routes through Hermes Projects → Agent Memory → Project Wiki / repository
+- Telegram routing validation confirmed the canonical paths and authority order
+- PatrickA Obsidian is outside the normal canonical PoolCheck routing path
 
 The next previously planned quality milestone remains a separate full PoolCheck UI/UX audit, but it is not started and must not be launched automatically.
 
