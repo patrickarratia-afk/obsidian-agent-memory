@@ -4,7 +4,7 @@ scope: project
 project: poolcheck
 area: software-engineering
 status: active
-source_date: 2026-09-02
+source_date: 2026-09-14
 reviewed: true
 owner: patrick
 aliases: [PoolCheck, poolcheck-app]
@@ -23,7 +23,7 @@ Application workspace:
 
 ## Purpose
 
-Lightweight operational-memory layer for PoolCheck development sessions. This vault stores only the minimum continuation context needed to resume work efficiently.
+Lightweight operational-memory layer for PoolCheck development sessions. This repository stores only the minimum continuation context needed to resume work efficiently.
 
 It must not become a duplicate of the Project Wiki or the repository.
 
@@ -47,11 +47,11 @@ Teslaquim may be a pilot provider, but PoolCheck must remain structurally indepe
 |----------|--------|------|
 | 1 | Current repo code, Git history, migrations, passing tests | Ultimate source of truth |
 | 2 | `.project-wiki/` at canonical repo path | Durable decisions, requirements, architecture, project state |
-| 3 | This Obsidian vault | Compact operational context and session continuity |
+| 3 | This Agent Memory repository | Compact operational context and session continuity |
 
 Resolution rules:
 
-- Obsidian vs Project Wiki → prefer Project Wiki unless current repo/tests disprove it
+- Agent Memory vs Project Wiki → prefer Project Wiki unless current repo/tests disprove it
 - Either memory layer vs repo/tests → trust repo/tests
 - Graphify and Serena are supporting tools, not canonical state
 
@@ -61,7 +61,7 @@ Resolution rules:
 - GPT-5.5: architecture, auth/isolation, sensitive reviews, final critical review
 - DeepSeek V4 Flash: routine implementation and well-bounded multi-file work
 - Hermes: primary agent launcher/orchestrator
-- Obsidian: operational memory
+- Agent Memory: operational memory
 - Serena: symbols, references, structural code navigation
 - Graphify: optional architecture/dependency analysis
 - Git/tests/diff/status: final technical authority

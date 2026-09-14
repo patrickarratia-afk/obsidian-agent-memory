@@ -31,9 +31,9 @@ The initial Project Wiki scan was structurally validated on 2026-09-01 with the 
 - errors: 0
 - warnings: 0
 
-## Role of Obsidian Agent Memory
+## Role of Agent Memory
 
-This vault is the compact operational continuation layer.
+This repository is the compact operational continuation layer.
 
 It stores only the minimum context required to resume PoolCheck work efficiently and must not duplicate Project Wiki content.
 
@@ -52,7 +52,7 @@ Stop retrieval once enough trustworthy context exists.
 
 ## Authority
 
-If Obsidian conflicts with Project Wiki, prefer the Project Wiki unless current repository evidence disproves it.
+If Agent Memory conflicts with Project Wiki, prefer the Project Wiki unless current repository evidence disproves it.
 
 If either memory layer conflicts with current code, Git history, migrations, or passing tests, trust the repository and tests.
 
@@ -61,7 +61,7 @@ If either memory layer conflicts with current code, Git history, migrations, or 
 | Tool | When to use |
 |------|-------------|
 | Project Wiki | Durable architecture, decisions, requirements, security, roadmap |
-| Obsidian | Session continuation and operational focus |
+| Agent Memory | Session continuation and operational focus |
 | Serena | Symbols, references, declarations, structural navigation |
 | Graphify | Optional architecture/dependency analysis |
 | Git/tests | Final technical authority |

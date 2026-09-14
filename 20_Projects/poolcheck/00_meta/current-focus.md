@@ -13,11 +13,17 @@ tags: [focus, active]
 
 Branch: `main`
 
-HEAD:
+Repository HEAD:
 
-`2fccccf Add delegated corrective action verification UI`
+`506392c Sync PoolCheck project wiki with current state`
 
-Working tree was clean at the close of Provider Corrective Actions + Verification UI.
+Latest product/code HEAD:
+
+`a1790db Fix measurement chart chronological order`
+
+The `506392c` commit updates Project Wiki documentation only. Product/code state remains represented by `a1790db`.
+
+Working tree was clean after the Project Wiki synchronization commit on 2026-09-14.
 
 ## Recently Completed
 
@@ -39,22 +45,37 @@ P1 portfolio filtering dimensions now covered:
 
 ## Current Objective
 
-Closure complete: Provider Corrective Actions + Verification UI delivered and pushed (2fccccf).
+No product feature is currently active.
 
-Next: separate full PoolCheck UI/UX audit (read-only, GPT-5.5). Do not start product features automatically. See "Next Quality Milestone" below.
+Repository, Project Wiki, and Agent Memory are being synchronized after the post-corrective operational milestones.
+
+The next previously planned quality milestone remains a separate full PoolCheck UI/UX audit, but it is not started and must not be launched automatically.
+
+Do not start product features by assumption. Confirm current human direction first.
+
+## Post-Corrective Operational Milestones
+
+Verified committed state after `2fccccf`:
+
+- `8133b30` — safe tracked database migration workflow
+- `23811aa` — delegated provider dosage
+- `01609b7` — delegated Pools on operational dashboard
+- `ccf7629` — delegated technician restrictions
+- `3a0cfc4` — delegated Pool trends and combined chlorine
+- `0a103a1` — scoped operational Pool reports
+- `3e7c11d` — delegated Pool detail hook-order fix
+- `a1790db` — measurement chart chronological-order fix
+- `506392c` — Project Wiki synchronized to current repository state
 
 ## Explicitly Deferred
 
-Do not fold these into 7E-B:
+Current unresolved/deferred product areas:
 
-- Pool → Facility assignment UI
+- cross-org planned work / provider-member assignment where justified
 - provider Facility management
-- Facility hierarchy redesign
 - Facility grants/inheritance
-- location → Facility conversion/backfill
-- DB schema/migrations
-- provider status N+1 optimization
-- unrelated redesign
+
+Do not start these by assumption. Confirm current product and authorization direction first.
 
 ## Known Non-Blocking Technical Debt
 
@@ -79,23 +100,6 @@ For significant changes:
 
 Do not repeat already-closed audits without new evidence.
 
-## Next Session
-
-Before implementing 7E-B:
-
-1. read `VAULT_RULES`
-2. read `_project`
-3. read this `current-focus`
-4. confirm Git branch/status/HEAD
-5. inspect exact auth, route, navigation, CRUD and generated Facility-hook patterns
-6. use Serena when useful
-7. use Graphify only if architectural dependency information is genuinely needed
-
-Current preferred implementation model while native Codex quota is unavailable:
-
-DeepSeek V4 Flash through Hermes/OpenRouter.
-
-A GPT-5.5 review should be used for sensitive authorization/permission changes when quota is available.
 
 ## Latest Milestone Closure — P1 7E-B
 
@@ -221,7 +225,6 @@ Also note that the same UI/UX audit methodology is intended for StockCheck separ
 
 Do not automatically start a product feature.
 After the UI/UX audit planning/decision, remaining P1 product candidates still include:
-- provider product/inventory dosage
 - cross-org planned work/provider-member assignment where justified
 
 Provider Facility management and Facility grant inheritance remain unresolved/deferred and must not be started by assumption.
