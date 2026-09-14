@@ -17,7 +17,7 @@ Canonical code remains `main`. `business-v3` was created directly from current `
 
 BSV3 runtime:
 - branch: `business-v3`
-- HEAD: `350e9db` (`Auto-link SII invoices to existing transactions`)
+- HEAD: `06b0c85` (`Merge main product updates into Business V3`)
 - remote: `origin/business-v3` at the same SHA
 - SII real: company 1 uses `sii_direct`, validated end-to-end in BSV3
 - SII runtime secrets: local ignored file `backend/.env.business-v3-sii.local`; never commit
@@ -30,7 +30,25 @@ BSV3 runtime:
 
 `stockcheck_business_v3` is an independent clone of the former BSV2 business database `stockcheck_business_v1`. The source BSV2 database remains untouched and backed up. BSV2 is now frozen as reference/history/backup rather than the active path.
 
-Do not open a PR from `business-v3` to `main` by assumption. Validate BSV3 in real operational use first. If a genuinely missing BSV2 behavior is discovered later, reimplement it against modern `main`/BSV3 rather than blindly cherry-picking old BSV2 code.
+Do not bulk-merge `business-v3` into `main` by assumption. Validate changes in BSV3 first, then promote validated functional/product changes promptly and selectively to canonical `main`. Keep BSV3-only runtime/configuration out of `main`. If a genuinely missing BSV2 behavior is discovered later, reimplement it against modern `main`/BSV3 rather than blindly cherry-picking old BSV2 code.
+
+## Main / Business V3 synchronization policy
+
+`main` remains the canonical StockCheck product branch. `business-v3` is an operational validation environment, not an independent product line.
+
+Any functional improvement, bug fix, API change, UI change, business rule or regression test developed and validated in BSV3 must be promoted to `main` promptly so the branches do not accumulate product divergence.
+
+BSV3-only divergence is allowed only for environment-specific runtime/configuration such as local startup scripts, isolated ports, database selection and local secret/runtime handling.
+
+Current synchronized baseline:
+- `main`: `21aa4c9` (`Auto-link SII invoices to existing transactions`)
+- `business-v3`: `06b0c85` (`Merge main product updates into Business V3`)
+- current BSV3-only content difference from `main`:
+  - `package.json` BSV3 startup entries
+  - `scripts/dev/start-business-v3-backend.sh`
+  - `scripts/dev/start-business-v3-web.sh`
+- current `main` is an ancestor of `business-v3`
+- no functional product divergence remains after the SII auto-link synchronization
 
 ## Recently Completed
 
@@ -80,9 +98,9 @@ Start BSV3 with:
 
 BSV3 is now the primary operational test environment and has real SII connectivity validated. Treat `main` as canonical code and `business-v3` as the isolated operational branch for real workflow validation.
 
-The next operational focus is normal use of Bandeja / Compras / Ventas / Inventario against BSV3 data with SII auto-link V1 active for new DTE 33 documents. Historical issued SII documents 82–85 are reconciled to existing sales; received SII documents 86–89 remain legitimately extracted because there are no exact purchase candidates. Continue operational validation before any BSV3→main merge.
+The next operational focus is normal use of Bandeja / Compras / Ventas / Inventario against BSV3 data with SII auto-link V1 active for new DTE 33 documents. Historical issued SII documents 82–85 are reconciled to existing sales; received SII documents 86–89 remain legitimately extracted because there are no exact purchase candidates. Functional improvements discovered during BSV3 operational use must be promoted to `main` promptly after validation so BSV3 does not accumulate product divergence.
 
-Do not merge BSV3 into `main` yet. Do not modify or overwrite `stockcheck_business_v1`. Do not revive the frozen BSV2 integration branch unless new evidence requires it.
+Do not bulk-merge BSV3 runtime/configuration into `main`. Promote validated functional changes to `main` promptly while keeping the environment-specific BSV3 layer separate. Do not modify or overwrite `stockcheck_business_v1`. Do not revive the frozen BSV2 integration branch unless new evidence requires it.
 
 If a behavior from BSV2 appears missing during real use, inspect the modern BSV3/main implementation first and reimplement only the missing behavior if still justified. The two previously identified BSV2-only contact-lock UX guards for OV→sale and OC→purchase remain intentionally unported unless real use shows they are needed.
 
