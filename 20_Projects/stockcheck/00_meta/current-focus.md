@@ -17,7 +17,7 @@ Canonical code remains `main`. `business-v3` was created directly from current `
 
 BSV3 runtime:
 - branch: `business-v3`
-- HEAD: `8ca0a72` (`Merge main product updates into Business V3`)
+- HEAD: `534fba8` (`Merge main product updates into Business V3`)
 - remote: `origin/business-v3` at the same SHA
 - SII real: company 1 uses `sii_direct`, validated end-to-end in BSV3
 - SII runtime secrets: local ignored file `backend/.env.business-v3-sii.local`; never commit
@@ -41,16 +41,18 @@ Any functional improvement, bug fix, API change, UI change, business rule or reg
 BSV3-only divergence is allowed only for environment-specific runtime/configuration such as local startup scripts, isolated ports, database selection and local secret/runtime handling.
 
 Current synchronized baseline:
-- `main`: `e050b0b` (`Improve SII document and operational expenses UX`)
-- `business-v3`: `8ca0a72` (`Merge main product updates into Business V3`)
+- `main`: `3949fa5` (`Align sales invoice column`)
+- `business-v3`: `534fba8` (`Merge main product updates into Business V3`)
 - current BSV3-only content difference from `main`:
   - `package.json` BSV3 startup entries
   - `scripts/dev/start-business-v3-backend.sh`
   - `scripts/dev/start-business-v3-web.sh`
 - current `main` is an ancestor of `business-v3`
-- no functional product divergence remains after the production UX and SII / operational-expenses UX synchronization
+- no functional product divergence remains after the commercial-document workflow synchronization
 
 ## Recently Completed
+
+- [x] Commercial document workflows synchronized (`1892529` BSV3 → `e23e65a` main; BSV3 resynchronized at `a054362`) — fixed Commercial Movements Actions first-click behavior by conditionally mounting commercial action modals, matching the proven Production modal pattern; modernized Editar datos consistently for Compra, Venta, OC and OV; separated official SII/XML from commercial Factura PDF/JPG and other attachments; added Factura as a supported attachment type plus explicit attachment-type reclassification without re-uploading or duplicating storage; unified invoice resolution so either a primary PDF/JPG or an attachment typed `invoice` is treated as the commercial invoice while XML SII never is; invoice attachments are excluded from Otros respaldos and coexist cleanly with linked SII; PurchaseForm and SaleForm allow selecting commercial invoice PDF/JPG while preserving `incomingDocumentId`; Commercial Movements displays only `Factura SII` when SII is the sole document and `Factura` + secondary `SII` when a commercial invoice also exists; Venta table header is now `Factura` and shows only `sale.document_number`; Inventory no longer renders SKU beneath product names while SKU search remains active; Bandeja SII sync-result messaging was aligned visually with StockCheck; textarea notes visual clipping was corrected; OV administrative editing uses the sales-order endpoint rather than the sale endpoint. Manual QA included Urzken invoice 32882 reclassification from Otro to Factura. A final micro-adjustment centered the Venta `Factura` header and invoice numbers (`47564f7` BSV3 → `3949fa5` main; BSV3 resynchronized at `534fba8`). Final validation passed `git diff --check`, TypeScript and frontend pure tests 68/68.
 
 - [x] SII document + Operational Expenses UX synchronized (`0466d92` BSV3 → `e050b0b` main; BSV3 resynchronized at `8ca0a72`) — extracted the readable SII DTE invoice UI into shared `SiiDteViewerModal`; Bandeja, Commercial Movements and Operational Expenses now reuse the same official-XML-backed readable viewer; Commercial Movements distinguishes normal `Factura` from `Factura SII` / `SII`, preserving the original XML as a secondary action inside the viewer; Operational Expenses gained the same SII behavior, a denser ERP-style table, consistent StockCheck controls/status badges, Inventory-style single scroll viewport/sticky behavior, and a unified compact New/Edit/Classify-from-Bandeja form. Visual design work uses Odoo as a reference for ERP ideas and workflows, but existing StockCheck screens/components remain the primary visual consistency reference. Manual visual QA passed; `git diff --check`, TypeScript and frontend pure tests 57/57 passed.
 - [x] Production completion/actions UX synchronized (`36f31e4` BSV3 → `91c858a` main; BSV3 resynchronized at `42f4e93`) — production no longer blocks completion with false `Envase: falta 0 unidades` rows when required container quantity is zero; Production History Actions modal now mounts only when a record exists so Actions opens immediately without requiring a page refresh. Manual BSV3 QA passed; TypeScript and frontend pure tests 57/57 passed.
@@ -101,18 +103,53 @@ Start BSV3 with:
 - `npm run business-v3:web`
 
 Current synchronized code baseline:
-- canonical `main`: `e050b0b`
-- operational `business-v3`: `8ca0a72`
+- canonical `main`: `3949fa5`
+- operational `business-v3`: `534fba8`
 - BSV3-only content difference remains limited to `package.json` startup entries plus `scripts/dev/start-business-v3-backend.sh` and `scripts/dev/start-business-v3-web.sh`
 - `main` is an ancestor of `business-v3`; no functional product divergence remains
 
-BSV3 remains the primary operational test environment with real SII connectivity validated. The readable SII DTE viewer is now shared by Bandeja, Commercial Movements and Operational Expenses. Operational Expenses now uses the current StockCheck visual language, with Inventory-style scrolling/table behavior and one unified form for new, edit and classify-from-Bandeja flows.
+BSV3 remains the primary operational validation environment with real SII connectivity.
 
-For future ERP/product UX work, use Odoo as a useful reference for workflows, information hierarchy and mature ERP patterns, but do not copy Odoo blindly. Existing StockCheck screens, primitives, spacing, table behavior and interaction patterns are the primary source of visual consistency.
+Commercial document handling is now closed for the current scope:
+- Compra / Venta / OC / OV administrative edit flows share the modern StockCheck visual language
+- official SII XML is distinct from commercial Factura PDF/JPG
+- commercial invoices can come from the primary document or an attachment typed `invoice`
+- invoice attachments do not remain duplicated under Otros respaldos
+- attachments can be explicitly reclassified without re-uploading the file
+- Commercial Movements shows `Factura`, `Factura SII`, or `Factura` + `SII` according to document availability
+- Venta table shows only the invoice/document number in its Factura column
+- Inventory hides SKU in the table while keeping SKU searchable
+- commercial Actions should open on first click without page refresh
 
-Continue normal operational use of Bandeja / Compras / Ventas / Inventario / Producción / Gastos Operacionales against BSV3 data. Functional improvements discovered in BSV3 must still be promoted promptly to canonical `main`.
+For future ERP/product UX work, use Odoo as a useful reference for workflows, information hierarchy and mature ERP patterns, but do not copy Odoo blindly. Existing StockCheck screens, primitives, spacing, table behavior and interaction patterns remain the primary source of visual consistency.
 
-Known historical document-storage gap remains: 8 broken references / 7 unique missing originals after the recovery pass (Blue Mountains 869, Sodimac 2026-06-24, Deter Center 11126, POD 876/880/907/917). Do not modify database references or substitute unrelated files merely to eliminate these missing-file indicators. A friendly missing-file/re-upload UX can be implemented later if operational use justifies it.
+## Next Product Focus — SII Credit Notes / DTE 61
+
+Start this as a fresh implementation block.
+
+The next design/implementation task is proper support for SII credit notes (DTE 61).
+
+Do NOT make stock adjustments merely because a DTE 61 exists.
+
+Required conceptual distinction:
+- price/discount/financial correction → financial effect only, no stock movement
+- customer return against a sale → stock returns into inventory
+- supplier return against a purchase → stock leaves inventory
+- total cancellation with physical return → reverse the appropriate inventory effect
+- administrative correction without physical return → no stock movement
+
+Desired direction:
+- parse/reference the original invoice from the SII XML when available
+- attempt to link the credit note to the original StockCheck purchase/sale
+- distinguish correction / partial return / total cancellation
+- require explicit stock-effect semantics before creating inventory movements
+- show invoice ↔ credit-note relationships in commercial history
+- represent any physical return clearly in Kardex
+- avoid creating duplicate sales/purchases or blindly reversing stock
+
+Treat DTE 61 design as a new isolated feature with its own inspection, data-model review, tests and manual QA before promotion to `main`.
+
+Known historical document-storage gap remains: 8 broken references / 7 unique missing originals after the recovery pass (Blue Mountains 869, Sodimac 2026-06-24, Deter Center 11126, POD 876/880/907/917). Do not modify database references or substitute unrelated files merely to eliminate these missing-file indicators.
 
 Do not bulk-merge BSV3 runtime/configuration into `main`. Keep the environment-specific BSV3 layer separate. Do not modify or overwrite `stockcheck_business_v1`. Do not revive the frozen BSV2 integration branch unless new evidence requires it.
 
