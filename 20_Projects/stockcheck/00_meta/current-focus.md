@@ -17,7 +17,7 @@ Canonical code remains `main`. `business-v3` was created directly from current `
 
 BSV3 runtime:
 - branch: `business-v3`
-- HEAD: `06b0c85` (`Merge main product updates into Business V3`)
+- HEAD: `8ca0a72` (`Merge main product updates into Business V3`)
 - remote: `origin/business-v3` at the same SHA
 - SII real: company 1 uses `sii_direct`, validated end-to-end in BSV3
 - SII runtime secrets: local ignored file `backend/.env.business-v3-sii.local`; never commit
@@ -41,16 +41,20 @@ Any functional improvement, bug fix, API change, UI change, business rule or reg
 BSV3-only divergence is allowed only for environment-specific runtime/configuration such as local startup scripts, isolated ports, database selection and local secret/runtime handling.
 
 Current synchronized baseline:
-- `main`: `21aa4c9` (`Auto-link SII invoices to existing transactions`)
-- `business-v3`: `06b0c85` (`Merge main product updates into Business V3`)
+- `main`: `e050b0b` (`Improve SII document and operational expenses UX`)
+- `business-v3`: `8ca0a72` (`Merge main product updates into Business V3`)
 - current BSV3-only content difference from `main`:
   - `package.json` BSV3 startup entries
   - `scripts/dev/start-business-v3-backend.sh`
   - `scripts/dev/start-business-v3-web.sh`
 - current `main` is an ancestor of `business-v3`
-- no functional product divergence remains after the SII auto-link synchronization
+- no functional product divergence remains after the production UX and SII / operational-expenses UX synchronization
 
 ## Recently Completed
+
+- [x] SII document + Operational Expenses UX synchronized (`0466d92` BSV3 → `e050b0b` main; BSV3 resynchronized at `8ca0a72`) — extracted the readable SII DTE invoice UI into shared `SiiDteViewerModal`; Bandeja, Commercial Movements and Operational Expenses now reuse the same official-XML-backed readable viewer; Commercial Movements distinguishes normal `Factura` from `Factura SII` / `SII`, preserving the original XML as a secondary action inside the viewer; Operational Expenses gained the same SII behavior, a denser ERP-style table, consistent StockCheck controls/status badges, Inventory-style single scroll viewport/sticky behavior, and a unified compact New/Edit/Classify-from-Bandeja form. Visual design work uses Odoo as a reference for ERP ideas and workflows, but existing StockCheck screens/components remain the primary visual consistency reference. Manual visual QA passed; `git diff --check`, TypeScript and frontend pure tests 57/57 passed.
+- [x] Production completion/actions UX synchronized (`36f31e4` BSV3 → `91c858a` main; BSV3 resynchronized at `42f4e93`) — production no longer blocks completion with false `Envase: falta 0 unidades` rows when required container quantity is zero; Production History Actions modal now mounts only when a record exists so Actions opens immediately without requiring a page refresh. Manual BSV3 QA passed; TypeScript and frontend pure tests 57/57 passed.
+- [x] Historical BSV3 document-storage recovery pass completed — audited 134 company-1 document references and restored 27 missing physical paths from verified Google Drive originals without changing database rows. Post-restore audit leaves 8 missing references representing 7 unique unresolved files: Servicios Blue Mountains invoice 869; Sodimac purchase dated 2026-06-24; Deter Center invoice 11126 (same physical file referenced by purchase + manual Bandeja row); and POD attachments for sales 876, 880, 907 and 917. All known SII XML files remained physically present. Do not substitute unrelated files or rewrite DB references to hide these missing originals.
 
 - [x] BSV3 SII document UX + auto-link V1 closed (`46bf164`, `89b178b`, `ecbcf0e`, `55a340c`, `350e9db`) — configured BSV3 document storage is now served from the isolated runtime root; DTE parsing preserves line units and additional taxes; a read-only SII DTE summary endpoint and human-readable invoice viewer were added while retaining the official XML unchanged; new DTE type 33 documents auto-link only to an existing exact sale/purchase match on company + direction + folio + normalized counterparty RUT + exact gross total + non-voided status; ambiguous, missing or unsupported matches remain extracted; duplicate SII identities remain idempotent and are never relinked on re-import; candidate resolution, row lock, incoming-document insert and audit log are protected in one transaction; regression coverage runs against `stockcheck_dev` company 7 and confirms no sale, purchase, line or stock movement is created by linking. Historical BSV3 reconciliation completed: incoming 82→sale 74, 83→sale 72, 84→sale 71, 85→sale 73; manual incoming 81 also remains linked to sale 74; incoming 86–89 remain extracted with zero exact purchase candidates. Company 1 core counts after closeout remain purchases 33, purchase_lines 70, sales 42, sale_lines 192, stock_movements 371, incoming_documents 59.
 - [x] BSV3 real SII operational validation (`0b7f58b`) — BSV3 backend starter now requires and loads the ignored local SII runtime secret file; `NODE_ENV=production`, live SII enablement, PFX presence/password and isolated local document storage are validated before startup; real `sii_direct` integration configured for company 1 / RUT 76337063-1 through the official API; first real both-direction sync succeeded with 8 documents created, 0 duplicates ignored and 0 failures; 8 XML files stored in the isolated BSV3 document root; second sync succeeded with no documents to process and left SII document count, max incoming-document ID and physical-file count unchanged, confirming safe repeat execution; DEV remained untouched on 8081. Historical cloned document storage audited: 45/50 manual-upload files recovered and copied with SHA-256 equality; 5 source files are physically missing locally (incoming IDs 77–81, including manual PDFs 919–922); no DB rows were rewritten and no XML was substituted for missing manual originals. Historical manual/SII overlap for invoice 922 was reconciled safely: manual incoming 81 and SII incoming 82 both link to sale 74 without creating a duplicate sale or stock movement.
@@ -96,11 +100,21 @@ Start BSV3 with:
 - `npm run business-v3:backend`
 - `npm run business-v3:web`
 
-BSV3 is now the primary operational test environment and has real SII connectivity validated. Treat `main` as canonical code and `business-v3` as the isolated operational branch for real workflow validation.
+Current synchronized code baseline:
+- canonical `main`: `e050b0b`
+- operational `business-v3`: `8ca0a72`
+- BSV3-only content difference remains limited to `package.json` startup entries plus `scripts/dev/start-business-v3-backend.sh` and `scripts/dev/start-business-v3-web.sh`
+- `main` is an ancestor of `business-v3`; no functional product divergence remains
 
-The next operational focus is normal use of Bandeja / Compras / Ventas / Inventario against BSV3 data with SII auto-link V1 active for new DTE 33 documents. Historical issued SII documents 82–85 are reconciled to existing sales; received SII documents 86–89 remain legitimately extracted because there are no exact purchase candidates. Functional improvements discovered during BSV3 operational use must be promoted to `main` promptly after validation so BSV3 does not accumulate product divergence.
+BSV3 remains the primary operational test environment with real SII connectivity validated. The readable SII DTE viewer is now shared by Bandeja, Commercial Movements and Operational Expenses. Operational Expenses now uses the current StockCheck visual language, with Inventory-style scrolling/table behavior and one unified form for new, edit and classify-from-Bandeja flows.
 
-Do not bulk-merge BSV3 runtime/configuration into `main`. Promote validated functional changes to `main` promptly while keeping the environment-specific BSV3 layer separate. Do not modify or overwrite `stockcheck_business_v1`. Do not revive the frozen BSV2 integration branch unless new evidence requires it.
+For future ERP/product UX work, use Odoo as a useful reference for workflows, information hierarchy and mature ERP patterns, but do not copy Odoo blindly. Existing StockCheck screens, primitives, spacing, table behavior and interaction patterns are the primary source of visual consistency.
+
+Continue normal operational use of Bandeja / Compras / Ventas / Inventario / Producción / Gastos Operacionales against BSV3 data. Functional improvements discovered in BSV3 must still be promoted promptly to canonical `main`.
+
+Known historical document-storage gap remains: 8 broken references / 7 unique missing originals after the recovery pass (Blue Mountains 869, Sodimac 2026-06-24, Deter Center 11126, POD 876/880/907/917). Do not modify database references or substitute unrelated files merely to eliminate these missing-file indicators. A friendly missing-file/re-upload UX can be implemented later if operational use justifies it.
+
+Do not bulk-merge BSV3 runtime/configuration into `main`. Keep the environment-specific BSV3 layer separate. Do not modify or overwrite `stockcheck_business_v1`. Do not revive the frozen BSV2 integration branch unless new evidence requires it.
 
 If a behavior from BSV2 appears missing during real use, inspect the modern BSV3/main implementation first and reimplement only the missing behavior if still justified. The two previously identified BSV2-only contact-lock UX guards for OV→sale and OC→purchase remain intentionally unported unless real use shows they are needed.
 
