@@ -17,7 +17,7 @@ Canonical code remains `main`. `business-v3` was created directly from current `
 
 BSV3 runtime:
 - branch: `business-v3`
-- HEAD: `534fba8` (`Merge main product updates into Business V3`)
+- HEAD: `aca741e` (`Merge main product updates into Business V3`)
 - remote: `origin/business-v3` at the same SHA
 - SII real: company 1 uses `sii_direct`, validated end-to-end in BSV3
 - SII runtime secrets: local ignored file `backend/.env.business-v3-sii.local`; never commit
@@ -41,16 +41,18 @@ Any functional improvement, bug fix, API change, UI change, business rule or reg
 BSV3-only divergence is allowed only for environment-specific runtime/configuration such as local startup scripts, isolated ports, database selection and local secret/runtime handling.
 
 Current synchronized baseline:
-- `main`: `3949fa5` (`Align sales invoice column`)
-- `business-v3`: `534fba8` (`Merge main product updates into Business V3`)
+- `main`: `b68d09d` (`Support SII credit note references`)
+- `business-v3`: `aca741e` (`Merge main product updates into Business V3`)
 - current BSV3-only content difference from `main`:
   - `package.json` BSV3 startup entries
   - `scripts/dev/start-business-v3-backend.sh`
   - `scripts/dev/start-business-v3-web.sh`
 - current `main` is an ancestor of `business-v3`
-- no functional product divergence remains after the commercial-document workflow synchronization
+- no functional product divergence remains after the DTE 61 Phase A synchronization
 
 ## Recently Completed
+
+- [x] DTE 61 Phase A synchronized (`271a506` BSV3 → `b68d09d` main; BSV3 resynchronized at `aca741e`) — added typed parsing of one or multiple SII `<Referencia>` blocks with raw `TpoDocRef`, `FolioRef`, `FchRef`, `CodRef` and `RazonRef`; added a separate deterministic DTE 61 auto-link path that links issued credit notes to the referenced sale and received credit notes to the referenced purchase using company + direction + referenced invoice folio + counterparty RUT + non-voided original, intentionally without requiring total equality because credit notes may be partial; existing DTE 33 exact-match auto-link behavior remains unchanged; no sale/purchase creation, voiding, original-total mutation, delivered/received quantity change or stock movement is performed by DTE 61 ingestion; `SiiDteViewerModal` now shows compact invoice-reference / correction-code / reason information and Commercial Movements can surface linked `NC <folio>` as a secondary SII document while preserving the invoice as primary. No migration was required; existing `incoming_documents`, `linked_entity_type/id` and `extraction_debug` are reused. Real read-only BSV3 validation found NC 51 referencing Factura 923 and exactly one sale candidate (sale 75); the already-imported NC 51 remains historically unlinked because Phase A intentionally avoided operational DB backfill. Validation passed parser tests, SII auto-link regressions including no-stock checks, `git diff --check`, TypeScript and frontend pure tests 69/69. Odoo Community remains a conceptual reference for separating financial credit-note reversal from physical stock return, not a source for blindly copied implementation code.
 
 - [x] Commercial document workflows synchronized (`1892529` BSV3 → `e23e65a` main; BSV3 resynchronized at `a054362`) — fixed Commercial Movements Actions first-click behavior by conditionally mounting commercial action modals, matching the proven Production modal pattern; modernized Editar datos consistently for Compra, Venta, OC and OV; separated official SII/XML from commercial Factura PDF/JPG and other attachments; added Factura as a supported attachment type plus explicit attachment-type reclassification without re-uploading or duplicating storage; unified invoice resolution so either a primary PDF/JPG or an attachment typed `invoice` is treated as the commercial invoice while XML SII never is; invoice attachments are excluded from Otros respaldos and coexist cleanly with linked SII; PurchaseForm and SaleForm allow selecting commercial invoice PDF/JPG while preserving `incomingDocumentId`; Commercial Movements displays only `Factura SII` when SII is the sole document and `Factura` + secondary `SII` when a commercial invoice also exists; Venta table header is now `Factura` and shows only `sale.document_number`; Inventory no longer renders SKU beneath product names while SKU search remains active; Bandeja SII sync-result messaging was aligned visually with StockCheck; textarea notes visual clipping was corrected; OV administrative editing uses the sales-order endpoint rather than the sale endpoint. Manual QA included Urzken invoice 32882 reclassification from Otro to Factura. A final micro-adjustment centered the Venta `Factura` header and invoice numbers (`47564f7` BSV3 → `3949fa5` main; BSV3 resynchronized at `534fba8`). Final validation passed `git diff --check`, TypeScript and frontend pure tests 68/68.
 
@@ -103,8 +105,8 @@ Start BSV3 with:
 - `npm run business-v3:web`
 
 Current synchronized code baseline:
-- canonical `main`: `3949fa5`
-- operational `business-v3`: `534fba8`
+- canonical `main`: `b68d09d`
+- operational `business-v3`: `aca741e`
 - BSV3-only content difference remains limited to `package.json` startup entries plus `scripts/dev/start-business-v3-backend.sh` and `scripts/dev/start-business-v3-web.sh`
 - `main` is an ancestor of `business-v3`; no functional product divergence remains
 
@@ -123,11 +125,11 @@ Commercial document handling is now closed for the current scope:
 
 For future ERP/product UX work, use Odoo as a useful reference for workflows, information hierarchy and mature ERP patterns, but do not copy Odoo blindly. Existing StockCheck screens, primitives, spacing, table behavior and interaction patterns remain the primary source of visual consistency.
 
-## Next Product Focus — SII Credit Notes / DTE 61
+## Next Product Focus — DTE 61 Phase B / Physical Returns
 
-Start this as a fresh implementation block.
+DTE 61 Phase A is closed and synchronized. Parsing, invoice-reference extraction, deterministic NC→sale/purchase linking, SII viewer display and Commercial Movements visibility are implemented without inventory mutation.
 
-The next design/implementation task is proper support for SII credit notes (DTE 61).
+The next isolated implementation block is explicit physical-return handling related to a credit note.
 
 Do NOT make stock adjustments merely because a DTE 61 exists.
 
