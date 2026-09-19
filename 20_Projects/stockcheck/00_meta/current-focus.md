@@ -17,7 +17,7 @@ Canonical code remains `main`. `business-v3` was created directly from current `
 
 BSV3 runtime:
 - branch: `business-v3`
-- HEAD: `aca741e` (`Merge main product updates into Business V3`)
+- HEAD: `ce743e8` (`Merge main product updates into Business V3`)
 - remote: `origin/business-v3` at the same SHA
 - SII real: company 1 uses `sii_direct`, validated end-to-end in BSV3
 - SII runtime secrets: local ignored file `backend/.env.business-v3-sii.local`; never commit
@@ -41,16 +41,18 @@ Any functional improvement, bug fix, API change, UI change, business rule or reg
 BSV3-only divergence is allowed only for environment-specific runtime/configuration such as local startup scripts, isolated ports, database selection and local secret/runtime handling.
 
 Current synchronized baseline:
-- `main`: `b68d09d` (`Support SII credit note references`)
-- `business-v3`: `aca741e` (`Merge main product updates into Business V3`)
+- `main`: `a1d97bd` (`Add physical inventory returns`)
+- `business-v3`: `ce743e8` (`Merge main product updates into Business V3`)
 - current BSV3-only content difference from `main`:
   - `package.json` BSV3 startup entries
   - `scripts/dev/start-business-v3-backend.sh`
   - `scripts/dev/start-business-v3-web.sh`
 - current `main` is an ancestor of `business-v3`
-- no functional product divergence remains after the DTE 61 Phase A synchronization
+- no functional product divergence remains after the DTE 61 Phase B1 synchronization
 
 ## Recently Completed
+
+- [x] DTE 61 Phase B1 / physical inventory returns closed (`642fcb3` BSV3 → `a1d97bd` main; BSV3 resynchronized at `ce743e8`) — added first-class backend physical-return handling separate from DTE ingestion and separate from sale/purchase void logic. Migration `043_add_inventory_returns.sql` adds `inventory_returns`, `inventory_return_lines` and `inventory_return_line_allocations`; customer returns create positive `devolucion_cliente` stock movements and restore the exact original tracked stock origin when available, while legacy/null-origin sale stock is returned without fabricating an origin; supplier returns create negative `devolucion_proveedor` movements against exact remaining purchase origins and mark an origin depleted at zero. Multiple partial returns are cumulative; ambiguous multi-origin cases require explicit allocation and never guess. Original sale/purchase status and quantities, `sale_line_stock_origins`, OV delivered quantities and OC received quantities remain unchanged. An optional linked DTE 61 may support a return only when it belongs to the same company/type/original entity; a credit note by itself never changes stock. Added `POST/GET /api/inventory-returns`, exact `stock_movement_origins` traceability, audit event `inventory_return.created`, schema coverage and a dedicated regression suite hardened to run only against `stockcheck_dev`. The regression covers tracked, legacy, partial, cumulative, multi-origin, wrong-origin, DTE-link and company-isolation cases and asserts TAG cleanup. Validation passed build, schema, sale/purchase, void, manual-batch, write-off, SII auto-link and inventory-return tests. Migration 043 was then applied transactionally to operational `stockcheck_business_v3`; the three new return tables were empty immediately after migration and operational counts remained exactly unchanged: sales 44, purchases 34, stock movements 380, stock origins 64, products 71 and total product stock 724.00.
 
 - [x] DTE 61 Phase A synchronized (`271a506` BSV3 → `b68d09d` main; BSV3 resynchronized at `aca741e`) — added typed parsing of one or multiple SII `<Referencia>` blocks with raw `TpoDocRef`, `FolioRef`, `FchRef`, `CodRef` and `RazonRef`; added a separate deterministic DTE 61 auto-link path that links issued credit notes to the referenced sale and received credit notes to the referenced purchase using company + direction + referenced invoice folio + counterparty RUT + non-voided original, intentionally without requiring total equality because credit notes may be partial; existing DTE 33 exact-match auto-link behavior remains unchanged; no sale/purchase creation, voiding, original-total mutation, delivered/received quantity change or stock movement is performed by DTE 61 ingestion; `SiiDteViewerModal` now shows compact invoice-reference / correction-code / reason information and Commercial Movements can surface linked `NC <folio>` as a secondary SII document while preserving the invoice as primary. No migration was required; existing `incoming_documents`, `linked_entity_type/id` and `extraction_debug` are reused. Real read-only BSV3 validation found NC 51 referencing Factura 923 and exactly one sale candidate (sale 75); the already-imported NC 51 remains historically unlinked because Phase A intentionally avoided operational DB backfill. Validation passed parser tests, SII auto-link regressions including no-stock checks, `git diff --check`, TypeScript and frontend pure tests 69/69. Odoo Community remains a conceptual reference for separating financial credit-note reversal from physical stock return, not a source for blindly copied implementation code.
 
@@ -105,10 +107,11 @@ Start BSV3 with:
 - `npm run business-v3:web`
 
 Current synchronized code baseline:
-- canonical `main`: `b68d09d`
-- operational `business-v3`: `aca741e`
+- canonical `main`: `a1d97bd`
+- operational `business-v3`: `ce743e8`
 - BSV3-only content difference remains limited to `package.json` startup entries plus `scripts/dev/start-business-v3-backend.sh` and `scripts/dev/start-business-v3-web.sh`
 - `main` is an ancestor of `business-v3`; no functional product divergence remains
+- BSV3 database has migration `043_add_inventory_returns.sql` applied and is ready for physical-return UI validation
 
 BSV3 remains the primary operational validation environment with real SII connectivity.
 
@@ -125,31 +128,40 @@ Commercial document handling is now closed for the current scope:
 
 For future ERP/product UX work, use Odoo as a useful reference for workflows, information hierarchy and mature ERP patterns, but do not copy Odoo blindly. Existing StockCheck screens, primitives, spacing, table behavior and interaction patterns remain the primary source of visual consistency.
 
-## Next Product Focus — DTE 61 Phase B / Physical Returns
+## Next Product Focus — DTE 61 Phase B2 / Return UI + Kardex
 
-DTE 61 Phase A is closed and synchronized. Parsing, invoice-reference extraction, deterministic NC→sale/purchase linking, SII viewer display and Commercial Movements visibility are implemented without inventory mutation.
+DTE 61 Phase B1 is closed, synchronized and operationally migrated in BSV3.
 
-The next isolated implementation block is explicit physical-return handling related to a credit note.
+The backend now has a first-class physical-return model. DTE 61 remains fiscal evidence only and never causes stock movement automatically.
 
-Do NOT make stock adjustments merely because a DTE 61 exists.
+The next isolated implementation block is the user-facing workflow for explicitly registering and reviewing physical returns.
 
-Required conceptual distinction:
-- price/discount/financial correction → financial effect only, no stock movement
-- customer return against a sale → stock returns into inventory
-- supplier return against a purchase → stock leaves inventory
-- total cancellation with physical return → reverse the appropriate inventory effect
-- administrative correction without physical return → no stock movement
+Required B2 direction:
+- add a clear `Registrar devolución` action from the relevant Venta / Compra commercial workflow
+- when a linked DTE 61 exists, surface it as optional supporting fiscal context rather than an automatic stock instruction
+- prefill the original sale/purchase and eligible lines from the linked commercial document
+- let the user choose returned quantities explicitly
+- when one eligible stock origin can satisfy the quantity, allow the backend deterministic resolution
+- when multiple origins/lots are eligible, require explicit origin/lot allocation instead of guessing
+- clearly distinguish `Devolución de cliente` from `Devolución a proveedor`
+- show the resulting physical-return relationship in commercial history
+- show return stock movements clearly in Kardex using the existing `devolucion_cliente` / `devolucion_proveedor` movement types
+- keep the original invoice, sale/purchase, OV/OC delivery/receipt quantities and original stock-allocation history intact
+- support partial and repeated returns without converting them into voids or destructive rewrites
 
-Desired direction:
-- parse/reference the original invoice from the SII XML when available
-- attempt to link the credit note to the original StockCheck purchase/sale
-- distinguish correction / partial return / total cancellation
-- require explicit stock-effect semantics before creating inventory movements
-- show invoice ↔ credit-note relationships in commercial history
-- represent any physical return clearly in Kardex
-- avoid creating duplicate sales/purchases or blindly reversing stock
+B2 should reuse existing StockCheck modal/form/table primitives and visual language. Odoo remains a conceptual workflow reference, especially its separation between financial credit-note reversal and stock return, but StockCheck UI consistency remains primary.
 
-Treat DTE 61 design as a new isolated feature with its own inspection, data-model review, tests and manual QA before promotion to `main`.
+Do not add automatic physical-return behavior from CodRef 1/2/3. CodRef describes fiscal correction semantics and is not proof that goods physically moved.
+
+Before promotion to `main`, validate B2 manually in BSV3 plus regression coverage for:
+- customer partial/full return UI
+- supplier partial/full return UI
+- linked and unlinked DTE 61
+- single-origin auto resolution
+- multi-origin explicit allocation
+- Kardex visibility
+- company isolation
+- no unintended mutation of original sale/purchase/OV/OC data
 
 Known historical document-storage gap remains: 8 broken references / 7 unique missing originals after the recovery pass (Blue Mountains 869, Sodimac 2026-06-24, Deter Center 11126, POD 876/880/907/917). Do not modify database references or substitute unrelated files merely to eliminate these missing-file indicators.
 
