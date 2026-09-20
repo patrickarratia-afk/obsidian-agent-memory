@@ -17,7 +17,7 @@ Canonical code remains `main`. `business-v3` was created directly from current `
 
 BSV3 runtime:
 - branch: `business-v3`
-- HEAD: `ce743e8` (`Merge main product updates into Business V3`)
+- HEAD: `74c16d3` (`Merge main product updates into Business V3`)
 - remote: `origin/business-v3` at the same SHA
 - SII real: company 1 uses `sii_direct`, validated end-to-end in BSV3
 - SII runtime secrets: local ignored file `backend/.env.business-v3-sii.local`; never commit
@@ -41,16 +41,18 @@ Any functional improvement, bug fix, API change, UI change, business rule or reg
 BSV3-only divergence is allowed only for environment-specific runtime/configuration such as local startup scripts, isolated ports, database selection and local secret/runtime handling.
 
 Current synchronized baseline:
-- `main`: `a1d97bd` (`Add physical inventory returns`)
-- `business-v3`: `ce743e8` (`Merge main product updates into Business V3`)
+- `main`: `fa69953` (`Add inventory return workflows`)
+- `business-v3`: `74c16d3` (`Merge main product updates into Business V3`)
 - current BSV3-only content difference from `main`:
   - `package.json` BSV3 startup entries
   - `scripts/dev/start-business-v3-backend.sh`
   - `scripts/dev/start-business-v3-web.sh`
 - current `main` is an ancestor of `business-v3`
-- no functional product divergence remains after the DTE 61 Phase B1 synchronization
+- no functional product divergence remains after the DTE 61 Phase B2 synchronization
 
 ## Recently Completed
+
+- [x] DTE 61 Phase B2 / Return UI + Kardex closed (`1642ece` BSV3 → `fa69953` main; BSV3 resynchronized at `74c16d3`) — added the user-facing physical-return workflow on top of the Phase B1 backend model. Venta and Compra actions now expose `Registrar devolución` for active real commercial documents; a dedicated StockCheck-styled modal distinguishes `Devolución de cliente` from `Devolución a proveedor`, prefills original document/line context, shows original / already returned / currently returnable quantities, supports Chilean decimal input, and preserves the original sale/purchase plus OV/OC quantities and allocation history. Added read-only `GET /api/inventory-returns/prepare` to resolve eligible return lines, historical sale allocations, purchase origins, existing active returns and optional same-company linked DTE 61 context without mutating stock. Single eligible origins can resolve automatically; ambiguous or split cases require explicit allocation and validate both requested totals and per-origin availability. Linked credit notes remain optional fiscal support only and never trigger stock movement automatically. Commercial Movements now shows physical-return history and refreshes immediately after a successful return. Kardex maps `devolucion_cliente` and `devolucion_proveedor` to clear user-facing labels while preserving positive Entrada vs negative Salida semantics. DTE 61 fiscal-reference reads were hardened to prefer `autoLink.reference`, then the first valid invoice reference in `references[]`, then legacy flat fields; NC 51 now shows `CodRef 3 · Ref. Factura 923 · Orden incorrecta`. Historical NC 51 / Factura 923 was reconciled operationally in BSV3 only after exact XML and Phase A candidate guards confirmed a single match; only incoming document 97 linkage/debug metadata changed and physical-return tables remained at zero, so no stock movement was created. The SII Bandeja date prefill bug was also fixed: backend timestamps such as `2026-09-17T03:00:00.000Z` are normalized to `YYYY-MM-DD`, and local calendar fallback no longer depends on UTC `toISOString()`. Manual visual QA passed for customer and supplier return flows; final validation passed `git diff --check`, TypeScript, backend build and frontend pure tests 86/86. BSV3 differs from `main` only by its three approved runtime/config files.
 
 - [x] DTE 61 Phase B1 / physical inventory returns closed (`642fcb3` BSV3 → `a1d97bd` main; BSV3 resynchronized at `ce743e8`) — added first-class backend physical-return handling separate from DTE ingestion and separate from sale/purchase void logic. Migration `043_add_inventory_returns.sql` adds `inventory_returns`, `inventory_return_lines` and `inventory_return_line_allocations`; customer returns create positive `devolucion_cliente` stock movements and restore the exact original tracked stock origin when available, while legacy/null-origin sale stock is returned without fabricating an origin; supplier returns create negative `devolucion_proveedor` movements against exact remaining purchase origins and mark an origin depleted at zero. Multiple partial returns are cumulative; ambiguous multi-origin cases require explicit allocation and never guess. Original sale/purchase status and quantities, `sale_line_stock_origins`, OV delivered quantities and OC received quantities remain unchanged. An optional linked DTE 61 may support a return only when it belongs to the same company/type/original entity; a credit note by itself never changes stock. Added `POST/GET /api/inventory-returns`, exact `stock_movement_origins` traceability, audit event `inventory_return.created`, schema coverage and a dedicated regression suite hardened to run only against `stockcheck_dev`. The regression covers tracked, legacy, partial, cumulative, multi-origin, wrong-origin, DTE-link and company-isolation cases and asserts TAG cleanup. Validation passed build, schema, sale/purchase, void, manual-batch, write-off, SII auto-link and inventory-return tests. Migration 043 was then applied transactionally to operational `stockcheck_business_v3`; the three new return tables were empty immediately after migration and operational counts remained exactly unchanged: sales 44, purchases 34, stock movements 380, stock origins 64, products 71 and total product stock 724.00.
 
@@ -107,11 +109,11 @@ Start BSV3 with:
 - `npm run business-v3:web`
 
 Current synchronized code baseline:
-- canonical `main`: `a1d97bd`
-- operational `business-v3`: `ce743e8`
+- canonical `main`: `fa69953`
+- operational `business-v3`: `74c16d3`
 - BSV3-only content difference remains limited to `package.json` startup entries plus `scripts/dev/start-business-v3-backend.sh` and `scripts/dev/start-business-v3-web.sh`
 - `main` is an ancestor of `business-v3`; no functional product divergence remains
-- BSV3 database has migration `043_add_inventory_returns.sql` applied and is ready for physical-return UI validation
+- BSV3 database has migration `043_add_inventory_returns.sql` applied and the physical-return UI/Kardex workflow is implemented and validated
 
 BSV3 remains the primary operational validation environment with real SII connectivity.
 
@@ -128,40 +130,28 @@ Commercial document handling is now closed for the current scope:
 
 For future ERP/product UX work, use Odoo as a useful reference for workflows, information hierarchy and mature ERP patterns, but do not copy Odoo blindly. Existing StockCheck screens, primitives, spacing, table behavior and interaction patterns remain the primary source of visual consistency.
 
-## Next Product Focus — DTE 61 Phase B2 / Return UI + Kardex
+## Current Product Focus
 
-DTE 61 Phase B1 is closed, synchronized and operationally migrated in BSV3.
+DTE 61 Phase A, Phase B1 and Phase B2 are now closed and synchronized.
 
-The backend now has a first-class physical-return model. DTE 61 remains fiscal evidence only and never causes stock movement automatically.
+Current return architecture:
+- DTE 61 / Nota de crédito is fiscal evidence and optional supporting context only
+- physical stock movement requires an explicit StockCheck return operation
+- customer returns restore stock through `devolucion_cliente`
+- supplier returns consume stock through `devolucion_proveedor`
+- single-origin cases may resolve deterministically; ambiguous multi-origin cases require explicit allocation
+- partial and repeated returns are supported without voiding or destructively rewriting the original sale/purchase
+- Commercial Movements shows return history and Kardex shows the resulting physical movement
+- original invoice, sale/purchase, OV/OC delivery/receipt quantities and original allocation history remain intact
+- CodRef 1/2/3 never causes automatic physical stock movement
 
-The next isolated implementation block is the user-facing workflow for explicitly registering and reviewing physical returns.
+Real BSV3 fiscal reconciliation:
+- NC 51 is linked to sale 75 / Factura 923
+- fiscal context: `CodRef 3 · Ref. Factura 923 · Orden incorrecta`
+- this historical reconciliation changed only the incoming-document linkage/debug metadata
+- no `inventory_returns`, return lines, return allocations or stock movements were created by that reconciliation
 
-Required B2 direction:
-- add a clear `Registrar devolución` action from the relevant Venta / Compra commercial workflow
-- when a linked DTE 61 exists, surface it as optional supporting fiscal context rather than an automatic stock instruction
-- prefill the original sale/purchase and eligible lines from the linked commercial document
-- let the user choose returned quantities explicitly
-- when one eligible stock origin can satisfy the quantity, allow the backend deterministic resolution
-- when multiple origins/lots are eligible, require explicit origin/lot allocation instead of guessing
-- clearly distinguish `Devolución de cliente` from `Devolución a proveedor`
-- show the resulting physical-return relationship in commercial history
-- show return stock movements clearly in Kardex using the existing `devolucion_cliente` / `devolucion_proveedor` movement types
-- keep the original invoice, sale/purchase, OV/OC delivery/receipt quantities and original stock-allocation history intact
-- support partial and repeated returns without converting them into voids or destructive rewrites
-
-B2 should reuse existing StockCheck modal/form/table primitives and visual language. Odoo remains a conceptual workflow reference, especially its separation between financial credit-note reversal and stock return, but StockCheck UI consistency remains primary.
-
-Do not add automatic physical-return behavior from CodRef 1/2/3. CodRef describes fiscal correction semantics and is not proof that goods physically moved.
-
-Before promotion to `main`, validate B2 manually in BSV3 plus regression coverage for:
-- customer partial/full return UI
-- supplier partial/full return UI
-- linked and unlinked DTE 61
-- single-origin auto resolution
-- multi-origin explicit allocation
-- Kardex visibility
-- company isolation
-- no unintended mutation of original sale/purchase/OV/OC data
+The next product implementation block has not yet been selected. Continue from current BSV3/main rather than reopening BSV2 or extending DTE 61 by assumption.
 
 Known historical document-storage gap remains: 8 broken references / 7 unique missing originals after the recovery pass (Blue Mountains 869, Sodimac 2026-06-24, Deter Center 11126, POD 876/880/907/917). Do not modify database references or substitute unrelated files merely to eliminate these missing-file indicators.
 
