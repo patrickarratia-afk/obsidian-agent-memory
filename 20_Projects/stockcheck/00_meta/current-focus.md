@@ -17,7 +17,7 @@ Canonical code remains `main`. `business-v3` was created directly from current `
 
 BSV3 runtime:
 - branch: `business-v3`
-- HEAD: `74c16d3` (`Merge main product updates into Business V3`)
+- HEAD: `e90564c` (`Merge main product updates into Business V3`)
 - remote: `origin/business-v3` at the same SHA
 - SII real: company 1 uses `sii_direct`, validated end-to-end in BSV3
 - SII runtime secrets: local ignored file `backend/.env.business-v3-sii.local`; never commit
@@ -41,16 +41,18 @@ Any functional improvement, bug fix, API change, UI change, business rule or reg
 BSV3-only divergence is allowed only for environment-specific runtime/configuration such as local startup scripts, isolated ports, database selection and local secret/runtime handling.
 
 Current synchronized baseline:
-- `main`: `fa69953` (`Add inventory return workflows`)
-- `business-v3`: `74c16d3` (`Merge main product updates into Business V3`)
+- `main`: `3a7410c` (`Keep SII primary when attaching commercial PDFs`)
+- `business-v3`: `e90564c` (`Merge main product updates into Business V3`)
 - current BSV3-only content difference from `main`:
   - `package.json` BSV3 startup entries
   - `scripts/dev/start-business-v3-backend.sh`
   - `scripts/dev/start-business-v3-web.sh`
 - current `main` is an ancestor of `business-v3`
-- no functional product divergence remains after the DTE 61 Phase B2 synchronization
+- no functional product divergence remains after the SII/commercial-PDF follow-on synchronization
 
 ## Recently Completed
+
+- [x] SII-primary commercial PDF separation + comparison closed (`2870370` BSV3 → `3a7410c` main; BSV3 resynchronized at `e90564c`) — corrected the real Sale/Purchase workflow opened from Bandeja SII so the official SII XML remains the authoritative structured source while an optional commercial PDF/JPG is stored independently as visual/supporting evidence. SII-origin drafts now preserve `incomingDocumentId` and explicit `incomingDocumentSourceType` while leaving the commercial `documentName/documentUrl` slot free for PDF/JPG; source identity is determined from the explicit SII marker rather than filenames, labels or presentation text. Attaching a PDF/JPG no longer clears or replaces SII suggested lines, fiscal fields, totals, extraction context or stock-origin allocations. Added a non-destructive `Comparar con PDF` action for both Venta and Compra using the existing commercial-document extractor, with comparison results held separately from SII state; the panel reports coincident fields and reviewable differences across folio, date, RUT, name, net, IVA, total, line count and line-level description/quantity/unit price/net without mutating the SII input. Manual visual QA passed both the positive case (Factura 925 PDF matched SII folio 925 and showed `Coincide con SII`) and negative case (Factura 924 PDF against SII 925 showed `Hay diferencias para revisar` with folio, totals and line differences) while the underlying `Líneas sugeridas desde SII folio 925` remained intact. Final validation passed `git diff --check`, TypeScript, backend build and frontend pure tests 101/101. Product rule: **SII is primary; PDF verifies**. BSV3 differs from `main` only by its three approved runtime/config files.
 
 - [x] DTE 61 Phase B2 / Return UI + Kardex closed (`1642ece` BSV3 → `fa69953` main; BSV3 resynchronized at `74c16d3`) — added the user-facing physical-return workflow on top of the Phase B1 backend model. Venta and Compra actions now expose `Registrar devolución` for active real commercial documents; a dedicated StockCheck-styled modal distinguishes `Devolución de cliente` from `Devolución a proveedor`, prefills original document/line context, shows original / already returned / currently returnable quantities, supports Chilean decimal input, and preserves the original sale/purchase plus OV/OC quantities and allocation history. Added read-only `GET /api/inventory-returns/prepare` to resolve eligible return lines, historical sale allocations, purchase origins, existing active returns and optional same-company linked DTE 61 context without mutating stock. Single eligible origins can resolve automatically; ambiguous or split cases require explicit allocation and validate both requested totals and per-origin availability. Linked credit notes remain optional fiscal support only and never trigger stock movement automatically. Commercial Movements now shows physical-return history and refreshes immediately after a successful return. Kardex maps `devolucion_cliente` and `devolucion_proveedor` to clear user-facing labels while preserving positive Entrada vs negative Salida semantics. DTE 61 fiscal-reference reads were hardened to prefer `autoLink.reference`, then the first valid invoice reference in `references[]`, then legacy flat fields; NC 51 now shows `CodRef 3 · Ref. Factura 923 · Orden incorrecta`. Historical NC 51 / Factura 923 was reconciled operationally in BSV3 only after exact XML and Phase A candidate guards confirmed a single match; only incoming document 97 linkage/debug metadata changed and physical-return tables remained at zero, so no stock movement was created. The SII Bandeja date prefill bug was also fixed: backend timestamps such as `2026-09-17T03:00:00.000Z` are normalized to `YYYY-MM-DD`, and local calendar fallback no longer depends on UTC `toISOString()`. Manual visual QA passed for customer and supplier return flows; final validation passed `git diff --check`, TypeScript, backend build and frontend pure tests 86/86. BSV3 differs from `main` only by its three approved runtime/config files.
 
@@ -109,8 +111,8 @@ Start BSV3 with:
 - `npm run business-v3:web`
 
 Current synchronized code baseline:
-- canonical `main`: `fa69953`
-- operational `business-v3`: `74c16d3`
+- canonical `main`: `3a7410c`
+- operational `business-v3`: `e90564c`
 - BSV3-only content difference remains limited to `package.json` startup entries plus `scripts/dev/start-business-v3-backend.sh` and `scripts/dev/start-business-v3-web.sh`
 - `main` is an ancestor of `business-v3`; no functional product divergence remains
 - BSV3 database has migration `043_add_inventory_returns.sql` applied and the physical-return UI/Kardex workflow is implemented and validated
@@ -118,6 +120,9 @@ Current synchronized code baseline:
 BSV3 remains the primary operational validation environment with real SII connectivity.
 
 Commercial document handling is now closed for the current scope:
+- for Sale/Purchase created from Bandeja SII, the official SII XML remains the primary structured source and an optional commercial PDF/JPG is secondary verification only
+- `Comparar con PDF` is non-destructive: it reports matches/differences without replacing SII fields, suggested lines, totals or stock allocations
+- explicit `incomingDocumentSourceType` identifies SII-origin drafts; SII identity is not inferred from filenames or presentation text
 - Compra / Venta / OC / OV administrative edit flows share the modern StockCheck visual language
 - official SII XML is distinct from commercial Factura PDF/JPG
 - commercial invoices can come from the primary document or an attachment typed `invoice`
@@ -133,6 +138,14 @@ For future ERP/product UX work, use Odoo as a useful reference for workflows, in
 ## Current Product Focus
 
 DTE 61 Phase A, Phase B1 and Phase B2 are now closed and synchronized.
+
+The SII/commercial-PDF follow-on is also closed and synchronized:
+- canonical `main`: `3a7410c`
+- operational `business-v3`: `e90564c`
+- official SII XML remains authoritative for Bandeja-origin Sale/Purchase drafts
+- optional PDF/JPG is supporting commercial evidence and may be compared without replacing SII state
+- positive and negative visual comparison QA passed
+- frontend pure validation: 101/101
 
 Current return architecture:
 - DTE 61 / Nota de crédito is fiscal evidence and optional supporting context only
