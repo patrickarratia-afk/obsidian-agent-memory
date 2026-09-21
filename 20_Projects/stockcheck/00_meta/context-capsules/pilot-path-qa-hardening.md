@@ -37,6 +37,13 @@ Final technical review result: READY WITH CONDITIONS for a controlled laptop/web
 - Inventory navigation performance hardening landed at `9dc60bb`; validation included 53/53 frontend pure tests, typecheck, static Expo export, and manual production-build QA at `http://localhost:8082` confirming fast navigation.
 - Frontend pure QA coverage and backend pilot-critical QA landed at `e374a63`; backend DEV verification covered purchase, sale, stock/Kardex, insufficient-stock rejection, voids, production completion/void, cost handling, and write-off behavior.
 
+## Post-pilot consolidation hardening
+- Current canonical baseline: `main` `69a4ed6` / BSV3 `d93d06d`; `main` is canonical and BSV3 remains only an operational validation layer.
+- BSV3 still uses `stockcheck_business_v3` and differs from `main` only by three runtime/config files: modified root `package.json`, `scripts/dev/start-business-v3-backend.sh`, and `scripts/dev/start-business-v3-web.sh`.
+- Closed after consolidation audit: HIGH-1 sale void after customer return; MEDIUM-1 strict company context; MEDIUM-2 purchase duplicate invoice handling; MEDIUM-3A migration drift visibility/tooling; legacy converted OC receipt idempotency.
+- HIGH-2 Etiquetas remains deliberately parked as historical data: current -1000 is explained by a continuous historical Kardex chain, but legacy origin metadata is inconsistent and no repair was requested or made.
+- These hardening fixes do not change the earlier controlled laptop/web pilot scope and do not imply public SaaS readiness; mobile QA/public SaaS readiness remain separate.
+
 ## Next Step
 Pilot Session 1 closed. Next project phase undecided — decide deliberately before opening SII Integration or Analytics/Pivot implementation.
 

@@ -13,11 +13,11 @@ tags: [focus, active]
 
 Business V3 is now the current StockCheck operational test environment.
 
-Canonical code remains `main`. `business-v3` was created directly from current `main` so the recent Odoo-like commercial, traceability, reservation, partial-delivery, production, SII and R2 improvements remain intact. BSV3 adds only reproducible local startup tooling on top of that baseline.
+Canonical code remains `main`. `business-v3` is synchronized from current `main`; the recent Odoo-like commercial, traceability, reservation, partial-delivery, production, SII, R2, return, strict-company-context, duplicate-purchase, migration-audit and legacy-OC idempotency improvements are all part of the current synchronized baseline. BSV3 adds only reproducible local startup/runtime tooling on top of that baseline.
 
 BSV3 runtime:
 - branch: `business-v3`
-- HEAD: `e90564c` (`Merge main product updates into Business V3`)
+- HEAD: `d93d06d` (`Merge main product updates into Business V3`)
 - remote: `origin/business-v3` at the same SHA
 - SII real: company 1 uses `sii_direct`, validated end-to-end in BSV3
 - SII runtime secrets: local ignored file `backend/.env.business-v3-sii.local`; never commit
@@ -30,7 +30,7 @@ BSV3 runtime:
 
 `stockcheck_business_v3` is an independent clone of the former BSV2 business database `stockcheck_business_v1`. The source BSV2 database remains untouched and backed up. BSV2 is now frozen as reference/history/backup rather than the active path.
 
-Do not bulk-merge `business-v3` into `main` by assumption. Validate changes in BSV3 first, then promote validated functional/product changes promptly and selectively to canonical `main`. Keep BSV3-only runtime/configuration out of `main`. If a genuinely missing BSV2 behavior is discovered later, reimplement it against modern `main`/BSV3 rather than blindly cherry-picking old BSV2 code.
+Do not bulk-merge BSV3 runtime/configuration into `main`. `main` is canonical; BSV3 is operational validation only. Product changes are synchronized back to `main`, and no functional product divergence currently remains. Keep BSV3-only runtime/configuration out of `main`. If a genuinely missing BSV2 behavior is discovered later, reimplement it against modern `main`/BSV3 rather than blindly cherry-picking old BSV2 code.
 
 ## Main / Business V3 synchronization policy
 
@@ -41,16 +41,31 @@ Any functional improvement, bug fix, API change, UI change, business rule or reg
 BSV3-only divergence is allowed only for environment-specific runtime/configuration such as local startup scripts, isolated ports, database selection and local secret/runtime handling.
 
 Current synchronized baseline:
-- `main`: `3a7410c` (`Keep SII primary when attaching commercial PDFs`)
-- `business-v3`: `e90564c` (`Merge main product updates into Business V3`)
-- current BSV3-only content difference from `main`:
-  - `package.json` BSV3 startup entries
+- canonical `main`: `69a4ed6` (`Block duplicate receipt of legacy purchase orders`)
+- operational `business-v3`: `d93d06d` (`Merge main product updates into Business V3`)
+- `origin/main` = `main`; `origin/business-v3` = `business-v3`
+- `main` is an ancestor of `business-v3`
+- BSV3 remains operational validation only and still uses `stockcheck_business_v3`
+- no functional product divergence remains
+- only three BSV3 runtime/config files differ from `main`:
+  - modified root `package.json`
   - `scripts/dev/start-business-v3-backend.sh`
   - `scripts/dev/start-business-v3-web.sh`
-- current `main` is an ancestor of `business-v3`
-- no functional product divergence remains after the SII/commercial-PDF follow-on synchronization
+- BSV2 remains frozen/off-limits
 
 ## Recently Completed
+
+- [x] Legacy purchase order receipt idempotency closed (`a1a09d0` BSV3 → `69a4ed6` main; BSV3 resynchronized at `d93d06d`) — current pending/partial/received OCs were safe, but legacy `status='converted'` OCs with `received_quantity=0` could be received again with a new invoice number. BSV3 read-only audit found 3 real historical converted OCs matching that risk. `POST /api/purchase-orders/:id/convert-to-purchase` now treats both `received` and `converted` as already fully received while preserving the current partial-receipt model, multiple purchases per OC, `source_purchase_order_id`, `purchase_order_line_id`, legacy `converted_purchase_id/converted_at` compatibility and legacy void fallback. Regression coverage proves converted OCs with or without `converted_purchase_id` are blocked without stock/purchase/origin mutation, partial → final receipt still works, current received OCs remain blocked, and legacy purchase void can explicitly reopen an OC for a legitimate new receipt. No migration/backfill performed.
+
+- [x] MEDIUM-3A migration drift audit tooling closed (`801ee5c` BSV3 → `f843513` main; BSV3 resynchronized at `6cce9d4`) — migration drift classified B: real but repairable historical drift. Current repo has canonical 001–043 migrations; DEV and BSV3 both record all current canonical files; critical current schema matches between DEV and BSV3. Historical orphan registry rows remain intentionally as forensic history and no registry rows/files were deleted, rewritten or restored. Added strictly read-only `audit:migrations`, current-file validation for malformed filenames and duplicate numeric prefixes, `HISTORICAL_MIGRATIONS.md`, and runner preflight rejection for malformed/duplicate current migration files. No checksum schema introduced yet. Expected historical orphan registry rows remain: DEV `025_allow_reclassified_stock_origins.sql`, `043_restore_purchase_stock_origin_uniqueness.sql`; BSV3 `025_allow_reclassified_stock_origins.sql`, `028_add_production_order_lot_and_origin_unique.sql`, `029_add_production_finished_product_id.sql`, `030_add_production_line_stock_allocations.sql`. Do **not** restore `043_restore_purchase_stock_origin_uniqueness.sql`; current intended schema has `inventory_stock_origins_company_purchase_line_idx` present and `inventory_stock_origins_purchase_line_purchase_unique` absent.
+
+- [x] MEDIUM-2 purchase duplicate invoice policy closed (`b6718ef` BSV3 → `3a836ee` main; BSV3 resynchronized at `496165e`) — purchase duplicate identity remains exactly `(company_id, supplier_name, invoice_number)`, with DB unique index `purchases_company_supplier_invoice_unique` as the ultimate integrity guard. Direct purchase creation, OC→Compra and purchase PATCH now share duplicate policy; duplicates return `409 PURCHASE_DUPLICATE`; active and voided historical purchases both block reuse; PostgreSQL `23505` for that exact unique index maps to the same domain 409 as a concurrency backstop. OC conversion rollback leaves OC quantities, stock, origins and movements unchanged on duplicate, with regression coverage including concurrency. No migration and no normalization redesign. Known follow-up only: supplier/invoice identity is still trim-only, so case/spelling/format variants may represent the same real invoice under different keys; this was deliberately not changed.
+
+- [x] MEDIUM-1 strict company context closed (`d107281` BSV3 → `56ceb81` main; BSV3 resynchronized at `0ab2dd8`) — removed silent `companyId` fallback-to-1 from mutation, protected and company-scoped paths; introduced strict positive-integer company ID parsing; invalid/missing/array-shaped `companyId` returns `400 INVALID_COMPANY_ID`; duplicate query parameters/arrays cannot silently select the first company; frontend active-company storage/selection normalizes to an accessible company. Only four explicitly transitional unauthenticated legacy reads retain company-1 fallback: `GET /api/products`, `GET /api/stock-movements`, `GET /api/purchases`, `GET /api/sales`. Regression suite passed against `stockcheck_dev`; no BSV3 data mutation.
+
+- [x] Consolidation audit HIGH-2 Etiquetas historical anomaly parked — company 1 product 54 `Etiquetas` historical Kardex chain was forensically inspected read-only: purchase +1000, production -20, manual write-off -980 → stock 0, then purchase void -1000 → stock -1000. Kardex arithmetic is internally continuous and explains the current -1000. Legacy origin metadata is inconsistent with that historical chain, but the user explicitly chose not to repair or investigate further for now. No DB correction was made; this is parked historical data, not an active implementation task.
+
+- [x] HIGH-1 sale void after customer return closed (`dc2aa2b` BSV3 → `57170e6` main; BSV3 resynchronized at `ffc4160`) — a sale with an active customer physical return can no longer be voided, because voiding after stock was already restored by a customer return could double-restore inventory or break return history. Sale void now checks active customer `inventory_returns` and blocks when an active return exists. Validated against `stockcheck_dev`; BSV3 operational DB was not destructively tested.
 
 - [x] SII-primary commercial PDF separation + comparison closed (`2870370` BSV3 → `3a7410c` main; BSV3 resynchronized at `e90564c`) — corrected the real Sale/Purchase workflow opened from Bandeja SII so the official SII XML remains the authoritative structured source while an optional commercial PDF/JPG is stored independently as visual/supporting evidence. SII-origin drafts now preserve `incomingDocumentId` and explicit `incomingDocumentSourceType` while leaving the commercial `documentName/documentUrl` slot free for PDF/JPG; source identity is determined from the explicit SII marker rather than filenames, labels or presentation text. Attaching a PDF/JPG no longer clears or replaces SII suggested lines, fiscal fields, totals, extraction context or stock-origin allocations. Added a non-destructive `Comparar con PDF` action for both Venta and Compra using the existing commercial-document extractor, with comparison results held separately from SII state; the panel reports coincident fields and reviewable differences across folio, date, RUT, name, net, IVA, total, line count and line-level description/quantity/unit price/net without mutating the SII input. Manual visual QA passed both the positive case (Factura 925 PDF matched SII folio 925 and showed `Coincide con SII`) and negative case (Factura 924 PDF against SII 925 showed `Hay diferencias para revisar` with folio, totals and line differences) while the underlying `Líneas sugeridas desde SII folio 925` remained intact. Final validation passed `git diff --check`, TypeScript, backend build and frontend pure tests 101/101. Product rule: **SII is primary; PDF verifies**. BSV3 differs from `main` only by its three approved runtime/config files.
 
@@ -111,11 +126,13 @@ Start BSV3 with:
 - `npm run business-v3:web`
 
 Current synchronized code baseline:
-- canonical `main`: `3a7410c`
-- operational `business-v3`: `e90564c`
-- BSV3-only content difference remains limited to `package.json` startup entries plus `scripts/dev/start-business-v3-backend.sh` and `scripts/dev/start-business-v3-web.sh`
+- canonical `main`: `69a4ed6` (`Block duplicate receipt of legacy purchase orders`)
+- operational `business-v3`: `d93d06d` (`Merge main product updates into Business V3`)
+- `origin/main` = `main`; `origin/business-v3` = `business-v3`
 - `main` is an ancestor of `business-v3`; no functional product divergence remains
-- BSV3 database has migration `043_add_inventory_returns.sql` applied and the physical-return UI/Kardex workflow is implemented and validated
+- BSV3-only content difference remains limited to the modified root `package.json`, `scripts/dev/start-business-v3-backend.sh`, and `scripts/dev/start-business-v3-web.sh`
+- BSV3 still uses `stockcheck_business_v3` and remains operational validation only
+- BSV2 remains frozen/off-limits
 
 BSV3 remains the primary operational validation environment with real SII connectivity.
 
@@ -137,15 +154,17 @@ For future ERP/product UX work, use Odoo as a useful reference for workflows, in
 
 ## Current Product Focus
 
-DTE 61 Phase A, Phase B1 and Phase B2 are now closed and synchronized.
+DTE 61 Phase A, Phase B1 and Phase B2 remain closed and synchronized. The SII/commercial-PDF follow-on also remains closed: official SII XML stays authoritative for Bandeja-origin Sale/Purchase drafts, and optional PDF/JPG evidence may be compared without replacing SII state.
 
-The SII/commercial-PDF follow-on is also closed and synchronized:
-- canonical `main`: `3a7410c`
-- operational `business-v3`: `e90564c`
-- official SII XML remains authoritative for Bandeja-origin Sale/Purchase drafts
-- optional PDF/JPG is supporting commercial evidence and may be compared without replacing SII state
-- positive and negative visual comparison QA passed
-- frontend pure validation: 101/101
+Current synchronized baseline:
+- canonical `main`: `69a4ed6` (`Block duplicate receipt of legacy purchase orders`)
+- operational `business-v3`: `d93d06d` (`Merge main product updates into Business V3`)
+- BSV3 is operational validation only; no functional product divergence remains
+- only three BSV3 runtime/config files differ from `main`
+
+Current hardening status: consolidation audit findings addressed in this checkpoint are closed — HIGH-1 sale void after customer return, MEDIUM-1 companyId fallback, MEDIUM-2 purchase duplicate invoice handling, MEDIUM-3A migration drift visibility/tooling, and legacy converted OC re-receipt risk. HIGH-2 Etiquetas remains deliberately parked as historical data with no repair.
+
+No new product implementation block has been selected yet. Optional follow-ups remain unselected: supplier/invoice canonical identity normalization, migration checksum support for future migrations, cleanup/documentation of `converted_purchase_id` / `converted_at` no-op assignments, and mobile QA/public SaaS readiness as separate concerns.
 
 Current return architecture:
 - DTE 61 / Nota de crédito is fiscal evidence and optional supporting context only
@@ -163,8 +182,6 @@ Real BSV3 fiscal reconciliation:
 - fiscal context: `CodRef 3 · Ref. Factura 923 · Orden incorrecta`
 - this historical reconciliation changed only the incoming-document linkage/debug metadata
 - no `inventory_returns`, return lines, return allocations or stock movements were created by that reconciliation
-
-The next product implementation block has not yet been selected. Continue from current BSV3/main rather than reopening BSV2 or extending DTE 61 by assumption.
 
 Known historical document-storage gap remains: 8 broken references / 7 unique missing originals after the recovery pass (Blue Mountains 869, Sodimac 2026-06-24, Deter Center 11126, POD 876/880/907/917). Do not modify database references or substitute unrelated files merely to eliminate these missing-file indicators.
 
