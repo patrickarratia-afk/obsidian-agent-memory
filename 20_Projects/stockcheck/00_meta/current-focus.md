@@ -17,7 +17,7 @@ Canonical code remains `main`. `business-v3` is synchronized from current `main`
 
 BSV3 runtime:
 - branch: `business-v3`
-- HEAD: `d93d06d` (`Merge main product updates into Business V3`)
+- HEAD: `18c8d79` (`Merge main product updates into Business V3`)
 - remote: `origin/business-v3` at the same SHA
 - SII real: company 1 uses `sii_direct`, validated end-to-end in BSV3
 - SII runtime secrets: local ignored file `backend/.env.business-v3-sii.local`; never commit
@@ -41,9 +41,9 @@ Any functional improvement, bug fix, API change, UI change, business rule or reg
 BSV3-only divergence is allowed only for environment-specific runtime/configuration such as local startup scripts, isolated ports, database selection and local secret/runtime handling.
 
 Current synchronized baseline:
-- canonical `main`: `69a4ed6` (`Block duplicate receipt of legacy purchase orders`)
-- operational `business-v3`: `d93d06d` (`Merge main product updates into Business V3`)
-- `origin/main` = `main`; `origin/business-v3` = `business-v3`
+- canonical `main`: `bd45ae2` (`Unify sale duplicate identity handling`)
+- operational `business-v3`: `18c8d79` (`Merge main product updates into Business V3`)
+- `origin/main` matches `main`; `origin/business-v3` matches `business-v3`
 - `main` is an ancestor of `business-v3`
 - BSV3 remains operational validation only and still uses `stockcheck_business_v3`
 - no functional product divergence remains
@@ -55,7 +55,9 @@ Current synchronized baseline:
 
 ## Recently Completed
 
-- [x] Post-hardening consolidation audit — **NO ACTIVE PILOT BLOCKERS FOUND** — read-only audit completed on canonical `main` `69a4ed6` and operational `business-v3` `d93d06d`; `main` is an ancestor of `business-v3`, no functional divergence remains, and the only BSV3 differences are the approved runtime/config files (`package.json`, `scripts/dev/start-business-v3-backend.sh`, `scripts/dev/start-business-v3-web.sh`). Audit scope covered purchases/OCs, sales/OVs, physical returns, production/unbuild, inventory/Kardex/stock origins, commercial identity, migrations/schema, company isolation, idempotency/concurrency and legacy compatibility. Previously closed issues remain closed: HIGH-1 sale void after customer return, MEDIUM-1 strict company context, MEDIUM-2 purchase duplicate invoice policy, MEDIUM-3A migration drift tooling, legacy converted OC re-receipt, DTE61 return architecture and SII-primary PDF comparison. HIGH-2 product 54 `Etiquetas` remains deliberately PARKED; the read-only invariant still sees stock `-1000`, but it was not reopened or modified. DEV/BSV3 read-only invariants were clean apart from that parked row: no origin `remaining_quantity > quantity_received`, no purchase-origin/sale-origin/return-line company mismatch, and no active returns attached to voided sales or purchases. New LOW optional hardening finding only: `SC-AUD-001 — Sale commercial identity policy`; direct `POST /api/sales` rejects duplicate `(company_id, customer_name, document_number)` including reuse of voided historical sale identity, while `PATCH /api/sales/:id` and `POST /api/sales-orders/:id/convert-to-sale` do not share the same app-level duplicate policy. DB partial unique index `sales_company_customer_document_active_unique` protects active sales only, so active duplicates rollback safely; voided-identity reuse can differ by writer path. Classification: LOW hardening / normalization-data-quality, not demonstrated stock corruption, not a pilot blocker. Optional future hardening: shared sale duplicate helper/policy analogous to purchase duplicate policy for sale POST, sale PATCH, OV→sale conversion and `23505` mapping. No corrective implementation block is currently required and no new implementation block has been selected; public SaaS readiness, mobile QA, supplier/invoice normalization, migration checksums and sale duplicate identity hardening remain separate optional/future concerns.
+- [x] SC-AUD-001 — Sale commercial identity hardening — CLOSED (`7278476` BSV3 → `bd45ae2` main; BSV3 resynchronized at `18c8d79`) — sale duplicate identity policy is now unified across `POST /api/sales`, `PATCH /api/sales/:id` and `POST /api/sales-orders/:id/convert-to-sale`. Identity remains exactly `(company_id, customer_name, document_number)` and normalization remains trim-only. Active and voided identity reuse both return HTTP `409` / `SALE_DUPLICATE`; PATCH self-exclusion preserves unchanged-identity saves. PostgreSQL race backstop maps `23505` only when `error.constraint === "sales_company_customer_document_active_unique"`; no generic message/detail fallback remains. Existing partial unique DB index remains unchanged; no migration was added; no identity canonicalization redesign was introduced. OV duplicate rejection rolls back safely with no stock/order side effects. Regression validation covered direct active duplicate, direct voided duplicate, PATCH active duplicate, PATCH voided duplicate, self PATCH, OV active duplicate, OV voided duplicate, different document, different customer, company isolation when available, concurrent direct sale, concurrent PATCH, real PostgreSQL `23505` constraint probe, sale flow, sales-order flow and partial delivery flow. All final validation RCs were 0 against guarded `stockcheck_dev`; BSV3 operational DB was not mutated.
+
+- [x] Post-hardening consolidation audit — **NO ACTIVE PILOT BLOCKERS FOUND** — current synchronized baseline is canonical `main` `bd45ae2` and operational `business-v3` `18c8d79`; `origin/main` matches `main`, `origin/business-v3` matches `business-v3`, `main` is an ancestor of `business-v3`, no functional product divergence remains, and the only BSV3 differences are the approved runtime/config files (`package.json`, `scripts/dev/start-business-v3-backend.sh`, `scripts/dev/start-business-v3-web.sh`). Audit scope covered purchases/OCs, sales/OVs, physical returns, production/unbuild, inventory/Kardex/stock origins, commercial identity, migrations/schema, company isolation, idempotency/concurrency and legacy compatibility. No known corrective integrity block remains open from that consolidation audit. Previously closed issues remain closed: HIGH-1 sale void after customer return, MEDIUM-1 strict company context, MEDIUM-2 purchase duplicate invoice policy, MEDIUM-3A migration drift tooling, legacy converted OC re-receipt, DTE61 return architecture, SII-primary PDF comparison and SC-AUD-001 sale commercial identity policy. HIGH-2 product 54 `Etiquetas` remains deliberately PARKED; the read-only invariant still sees stock `-1000`, but it was not reopened or modified. DEV/BSV3 read-only invariants were clean apart from that parked row: no origin `remaining_quantity > quantity_received`, no purchase-origin/sale-origin/return-line company mismatch, and no active returns attached to voided sales or purchases. No corrective implementation block is currently required and no new implementation block has been selected; public SaaS readiness, mobile QA, supplier/invoice normalization and migration checksums remain separate optional/future concerns.
 
 - [x] Legacy purchase order receipt idempotency closed (`a1a09d0` BSV3 → `69a4ed6` main; BSV3 resynchronized at `d93d06d`) — current pending/partial/received OCs were safe, but legacy `status='converted'` OCs with `received_quantity=0` could be received again with a new invoice number. BSV3 read-only audit found 3 real historical converted OCs matching that risk. `POST /api/purchase-orders/:id/convert-to-purchase` now treats both `received` and `converted` as already fully received while preserving the current partial-receipt model, multiple purchases per OC, `source_purchase_order_id`, `purchase_order_line_id`, legacy `converted_purchase_id/converted_at` compatibility and legacy void fallback. Regression coverage proves converted OCs with or without `converted_purchase_id` are blocked without stock/purchase/origin mutation, partial → final receipt still works, current received OCs remain blocked, and legacy purchase void can explicitly reopen an OC for a legitimate new receipt. No migration/backfill performed.
 
@@ -128,9 +130,9 @@ Start BSV3 with:
 - `npm run business-v3:web`
 
 Current synchronized code baseline:
-- canonical `main`: `69a4ed6` (`Block duplicate receipt of legacy purchase orders`)
-- operational `business-v3`: `d93d06d` (`Merge main product updates into Business V3`)
-- `origin/main` = `main`; `origin/business-v3` = `business-v3`
+- canonical `main`: `bd45ae2` (`Unify sale duplicate identity handling`)
+- operational `business-v3`: `18c8d79` (`Merge main product updates into Business V3`)
+- `origin/main` matches `main`; `origin/business-v3` matches `business-v3`
 - `main` is an ancestor of `business-v3`; no functional product divergence remains
 - BSV3-only content difference remains limited to the modified root `package.json`, `scripts/dev/start-business-v3-backend.sh`, and `scripts/dev/start-business-v3-web.sh`
 - BSV3 still uses `stockcheck_business_v3` and remains operational validation only
@@ -159,14 +161,16 @@ For future ERP/product UX work, use Odoo as a useful reference for workflows, in
 DTE 61 Phase A, Phase B1 and Phase B2 remain closed and synchronized. The SII/commercial-PDF follow-on also remains closed: official SII XML stays authoritative for Bandeja-origin Sale/Purchase drafts, and optional PDF/JPG evidence may be compared without replacing SII state.
 
 Current synchronized baseline:
-- canonical `main`: `69a4ed6` (`Block duplicate receipt of legacy purchase orders`)
-- operational `business-v3`: `d93d06d` (`Merge main product updates into Business V3`)
+- canonical `main`: `bd45ae2` (`Unify sale duplicate identity handling`)
+- operational `business-v3`: `18c8d79` (`Merge main product updates into Business V3`)
+- `origin/main` matches `main`; `origin/business-v3` matches `business-v3`
+- `main` is an ancestor of `business-v3`
 - BSV3 is operational validation only; no functional product divergence remains
 - only three BSV3 runtime/config files differ from `main`
 
-Current hardening status: post-hardening consolidation audit found **NO ACTIVE PILOT BLOCKERS** at `main` `69a4ed6` / `business-v3` `d93d06d`. Closed issues remain closed — HIGH-1 sale void after customer return, MEDIUM-1 companyId fallback, MEDIUM-2 purchase duplicate invoice handling, MEDIUM-3A migration drift visibility/tooling, legacy converted OC re-receipt risk, DTE61 return architecture and SII-primary PDF comparison. HIGH-2 Etiquetas remains deliberately parked as historical data with no repair; read-only invariants still see product 54 stock `-1000`.
+Current hardening status: post-hardening consolidation audit now has **NO ACTIVE PILOT BLOCKERS FOUND** at `main` `bd45ae2` / `business-v3` `18c8d79`. Closed issues remain closed — HIGH-1 sale void after customer return, MEDIUM-1 companyId fallback, MEDIUM-2 purchase duplicate invoice handling, MEDIUM-3A migration drift visibility/tooling, legacy converted OC re-receipt risk, DTE61 return architecture, SII-primary PDF comparison and SC-AUD-001 sale commercial identity policy. HIGH-2 Etiquetas remains deliberately parked as historical data with no repair; read-only invariants still see product 54 stock `-1000`.
 
-No corrective implementation block is currently required and no new product implementation block has been selected. Optional follow-ups remain unselected: supplier/invoice canonical identity normalization, migration checksum support for future migrations, cleanup/documentation of `converted_purchase_id` / `converted_at` no-op assignments, LOW sale duplicate identity hardening (`SC-AUD-001`), and mobile QA/public SaaS readiness as separate concerns.
+No known corrective integrity block from that consolidation audit is currently open and no new product implementation block has been selected. HIGH-2 Etiquetas remains deliberately parked. Optional follow-ups remain unselected: supplier/invoice canonical identity normalization, migration checksum support for future migrations, cleanup/documentation of `converted_purchase_id` / `converted_at` no-op assignments, and mobile QA/public SaaS readiness as separate concerns.
 
 Current return architecture:
 - DTE 61 / Nota de crédito is fiscal evidence and optional supporting context only

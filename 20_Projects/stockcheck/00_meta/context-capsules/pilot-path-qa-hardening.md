@@ -5,7 +5,7 @@ project: stockcheck
 domain: pilot-path-qa-hardening
 status: reviewed
 reviewed: true
-source_date: 2026-09-04
+source_date: 2026-09-21
 owner: patrick
 aliases: [pilot-qa, pilot-hardening, pilot-path-qa]
 tags: [capsule, pilot, qa, hardening]
@@ -38,14 +38,14 @@ Final technical review result: READY WITH CONDITIONS for a controlled laptop/web
 - Frontend pure QA coverage and backend pilot-critical QA landed at `e374a63`; backend DEV verification covered purchase, sale, stock/Kardex, insufficient-stock rejection, voids, production completion/void, cost handling, and write-off behavior.
 
 ## Post-pilot consolidation hardening
-- Current canonical baseline: `main` `69a4ed6` / BSV3 `d93d06d`; `main` is canonical and BSV3 remains only an operational validation layer.
+- Current canonical baseline: `main` `bd45ae2` / BSV3 `18c8d79`; `origin/main` matches `main`, `origin/business-v3` matches BSV3, `main` is an ancestor of BSV3, and no functional product divergence remains. BSV3 remains only an operational validation layer.
 - BSV3 still uses `stockcheck_business_v3` and differs from `main` only by three runtime/config files: modified root `package.json`, `scripts/dev/start-business-v3-backend.sh`, and `scripts/dev/start-business-v3-web.sh`.
 - Closed after consolidation audit: HIGH-1 sale void after customer return; MEDIUM-1 strict company context; MEDIUM-2 purchase duplicate invoice handling; MEDIUM-3A migration drift visibility/tooling; legacy converted OC receipt idempotency.
 - Post-hardening consolidation audit result: **NO ACTIVE PILOT BLOCKERS FOUND**. Read-only coverage included purchases/OCs, sales/OVs, physical returns, production/unbuild, inventory/Kardex/stock origins, commercial identity, migrations/schema, company isolation, idempotency/concurrency and legacy compatibility. DTE61 return architecture and SII-primary PDF comparison remain closed.
 - HIGH-2 Etiquetas remains deliberately parked as historical data: current `-1000` is explained by a continuous historical Kardex chain, but legacy origin metadata is inconsistent and no repair was requested or made. The post-hardening audit still saw product 54 stock `-1000` and did not reopen or modify it.
 - DEV/BSV3 read-only invariants were clean apart from parked Etiquetas: no origin remaining greater than received, no purchase-origin/sale-origin/return-line company mismatch, and no active returns attached to voided sales or purchases.
-- LOW optional hardening only: `SC-AUD-001` sale commercial identity policy. Direct sale POST rejects duplicate `(company_id, customer_name, document_number)` including voided historical identity reuse; sale PATCH and OV→sale conversion do not share that app-level policy. The DB partial unique index `sales_company_customer_document_active_unique` blocks active duplicates and rolls back safely, so this is not demonstrated stock corruption and not a pilot blocker. Optional future hardening would add a shared sale duplicate helper/policy and `23505` mapping.
-- Current status: no corrective implementation block is required; no new implementation block has been selected. Public SaaS readiness, mobile QA, supplier/invoice normalization, migration checksums and sale duplicate identity hardening remain separate optional/future concerns.
+- `SC-AUD-001` sale commercial identity hardening is CLOSED (`7278476` BSV3 → `bd45ae2` main; BSV3 resync `18c8d79`): sale POST, sale PATCH and OV→sale conversion now share duplicate identity policy for `(company_id, customer_name, document_number)` with trim-only normalization; active and voided reuse return `409 SALE_DUPLICATE`; no migration or identity canonicalization redesign was added.
+- Current status: no active pilot blockers found; no known corrective integrity block from that consolidation audit is currently open; no new implementation block has been selected. HIGH-2 Etiquetas remains deliberately parked. Public SaaS readiness, mobile QA, supplier/invoice normalization and migration checksums remain separate optional/future concerns.
 - These hardening fixes do not change the earlier controlled laptop/web pilot scope and do not imply public SaaS readiness; mobile QA/public SaaS readiness remain separate.
 
 ## Next Step
